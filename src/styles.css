@@ -1,0 +1,72 @@
+:root{
+  --bg: #f3f7f9;
+  --card: #ffffff;
+  --accent: #6aa6c9;
+  --muted: #6b7280;
+  --success: #7dd3a6;
+  --danger: #fca5a5;
+  --text: #10343b;
+}
+
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#e9f2f5);-webkit-font-smoothing:antialiased}
+
+.app-root{display:flex;flex-direction:column;min-height:100vh}
+.topbar{padding:20px 16px 4px;text-align:center}
+.title{font-size:28px;margin:0}
+.subtitle{font-size:14px;margin:6px 0;color:var(--muted)}
+
+.home{padding:12px}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:600px;margin:8px auto}
+.card{background:var(--card);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:120px;border:2px solid transparent}
+.card.playable{border-color:var(--accent);}
+.card .card-icons{display:flex;gap:8px}
+.card .card-icon svg{width:56px;height:56px;color:#111}
+.card-label{font-size:18px;font-weight:600}
+.coming-text{font-size:12px;color:var(--muted)}
+.card:focus{outline:3px solid #cfeefb}
+
+.game{padding:12px;flex:1;display:flex;flex-direction:column;gap:12px}
+.level-info{display:flex;justify-content:space-between;align-items:center;padding:0 12px}
+.level-pill{background:var(--card);padding:6px 12px;border-radius:999px;font-weight:700}
+.level-progress{color:var(--muted)}
+
+.reference{display:flex;justify-content:center}
+.reference-grid{display:flex;gap:12px;flex-wrap:wrap}
+.ref-cell svg{width:72px;height:72px;color:#2b6b77}
+
+.options-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:560px;margin:0 auto}
+.option{background:var(--card);height:84px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:2px solid transparent}
+.option svg{width:56px;height:56px;color:#0b4f57}
+.option:active{transform:translateY(1px)}
+.option.selected{background:linear-gradient(135deg,var(--success),#bff3da);border-color:transparent}
+.option.shake{animation:shake 0.36s}
+
+@keyframes shake{0%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25)}
+.congrats{background:var(--card);padding:20px;border-radius:14px;text-align:center;min-width:220px}
+.congrats h2{margin:0 0 8px}
+.primary{background:var(--accent);color:white;padding:12px 18px;border-radius:10px;border:none;font-size:16px}
+.secondary{background:transparent;border:2px solid rgba(16,52,59,0.08);padding:10px 14px;border-radius:10px}
+
+.bottom-controls{padding:12px;display:flex;justify-content:center}
+
+.winner{padding:20px;text-align:center}
+.meditate{display:flex;align-items:center;justify-content:center;height:140px}
+.kid{width:120px;height:120px;background:linear-gradient(180deg,#fff,#f2f7f8);border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 10px rgba(0,0,0,0.06)}
+.kid .head{width:44px;height:44px;background:#ffdca8;border-radius:50%}
+.kid .body{width:64px;height:28px;background:#cfeefb;border-radius:16px;margin-top:8px}
+
+.winner-buttons{display:flex;gap:12px;justify-content:center;margin-top:12px}
+.muted{color:var(--muted)}
+.footer{padding:12px;text-align:center;font-size:12px;color:var(--muted)}
+
+/* Mobile friendly: large tap targets */
+button, .option, .card{min-height:48px}
+
+@media(min-width:700px){
+  .cards{grid-template-columns:repeat(3,1fr)}
+  .options-grid{grid-template-columns:repeat(4,1fr)}
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Toddler Friendly Games",
+  "short_name": "ToddlerGames",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Small offline-first toddler friendly pattern match game",
+  "icons": []
+}
