@@ -174,5 +174,70 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
           <path d="M42 7 V22 L46 18 L50 22 V7Z" fill="#f43f5e" />
         </svg>
       )
+
+    /* ---- look-alikes (Tile Match level 3): same yellow body, different small details ---- */
+    case 'smile':
+      return (
+        <svg {...common}>
+          <FaceDisc />
+          <circle cx="23" cy="28" r="3.4" fill="#7c4a1e" />
+          <circle cx="41" cy="28" r="3.4" fill="#7c4a1e" />
+          <path d="M20 38 Q32 52 44 38" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          <circle cx="16" cy="37" r="4" fill="#fda4af" opacity="0.8" />
+          <circle cx="48" cy="37" r="4" fill="#fda4af" opacity="0.8" />
+        </svg>
+      )
+    case 'sleepy':
+      return (
+        <svg {...common}>
+          <FaceDisc />
+          <path d="M17 29 Q23 35 29 29" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          <path d="M35 29 Q41 35 47 29" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          <circle cx="32" cy="43" r="3.2" fill="#7c4a1e" />
+          <path d="M44 9 H54 L44 19 H54" stroke="#3b82f6" strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'wow':
+      return (
+        <svg {...common}>
+          <FaceDisc />
+          <path d="M16 20 Q23 13 30 20" stroke="#7c4a1e" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path d="M34 20 Q41 13 48 20" stroke="#7c4a1e" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <circle cx="23" cy="29" r="5.5" fill="#ffffff" stroke="#7c4a1e" strokeWidth="2" />
+          <circle cx="41" cy="29" r="5.5" fill="#ffffff" stroke="#7c4a1e" strokeWidth="2" />
+          <circle cx="23" cy="29" r="2.4" fill="#7c4a1e" />
+          <circle cx="41" cy="29" r="2.4" fill="#7c4a1e" />
+          <ellipse cx="32" cy="44" rx="6" ry="8" fill="#7c4a1e" />
+        </svg>
+      )
+    case 'wink':
+      return (
+        <svg {...common}>
+          <FaceDisc />
+          <circle cx="23" cy="29" r="3.4" fill="#7c4a1e" />
+          <path d="M35 30 Q41 24 47 30" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          <path d="M19 38 Q32 53 45 38" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          <path d="M30 47 Q36 55 41 45" fill="#fb7185" stroke="#e11d48" strokeWidth="2" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'star6':
+      return (
+        <svg {...common}>
+          <polygon
+            points="32.0,5.0 40.0,19.1 56.2,19.0 48.0,33.0 56.2,47.0 40.0,46.9 32.0,61.0 24.0,46.9 7.8,47.0 16.0,33.0 7.8,19.0 24.0,19.1"
+            fill="#ffc93c"
+            stroke="#f59e0b"
+            strokeWidth="3"
+            strokeLinejoin="round"
+          />
+          <circle cx="26" cy="31" r="2.6" fill="#7c4a1e" />
+          <circle cx="38" cy="31" r="2.6" fill="#7c4a1e" />
+          <path d="M27 38 Q32 43 37 38" stroke="#7c4a1e" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+        </svg>
+      )
   }
+}
+
+function FaceDisc() {
+  return <circle cx="32" cy="32" r="27" fill="#fde047" stroke="#f59e0b" strokeWidth="3" />
 }

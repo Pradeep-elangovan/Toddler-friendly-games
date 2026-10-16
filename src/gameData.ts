@@ -12,7 +12,10 @@ export const iconNames = [
   'book',
 ] as const
 
-export type IconName = (typeof iconNames)[number]
+/** Extra icons that look very alike: used only by Tile Match level 3. */
+export const lookAlikeNames = ['smile', 'sleepy', 'wow', 'wink', 'star6'] as const
+
+export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number]
 
 export const LEVEL_COUNT = 10
 
@@ -78,6 +81,52 @@ export function columnsFor(optionCount: number): number {
   return 4
 }
 
+/* ---------------- Tile Match (game 2) ---------------- */
+
+export const TILE_LEVEL_COUNT = 3
+
+export type TileLevel = {
+  level: number
+  /** the board is size x size tiles (size * size must be even) */
+  size: number
+  /** icons this level may draw from */
+  pool: readonly IconName[]
+  /** how many different icons appear on the board */
+  distinct: number
+}
+
+/**
+ * Same board size every level (big tiles for little fingers); the difficulty is in telling the icons apart:
+ *  1. only 4 very different icons, so there are lots of easy matches
+ *  2. 8 different icons to look through
+ *  3. look-alikes: four faces and two stars that differ only in small details
+ */
+export const tileLevels: TileLevel[] = [
+  { level: 1, size: 4, pool: ['star', 'heart', 'cloud', 'rocket', 'book', 'pencil'], distinct: 4 },
+  { level: 2, size: 4, pool: iconNames, distinct: 8 },
+  { level: 3, size: 4, pool: ['smile', 'sleepy', 'wow', 'wink', 'star', 'star6'], distinct: 6 },
+]
+
+export type Tile = {
+  /** unique per tile so identical icons can be tapped independently */
+  id: number
+  icon: IconName
+  gone: boolean
+}
+
+/** Builds a shuffled board for a level (1..TILE_LEVEL_COUNT). Every icon appears an even number of times. */
+export function makeTiles(level: number, random: () => number = Math.random): Tile[] {
+  const cfg = tileLevels[level - 1]
+  const pairCount = (cfg.size * cfg.size) / 2
+  const chosen = shuffle(cfg.pool, random).slice(0, cfg.distinct)
+  const pairIcons = Array.from({ length: pairCount }, (_, i) => chosen[i % chosen.length])
+  const icons = shuffle(
+    pairIcons.flatMap((icon) => [icon, icon]),
+    random,
+  )
+  return icons.map((icon, id) => ({ id, icon, gone: false }))
+}
+
 export const cards = [
   {
     id: 'pattern',
@@ -87,10 +136,10 @@ export const cards = [
     color: '#ffd166',
   },
   {
-    id: 'colors',
-    label: 'Color Pairs',
+    id: 'tiles',
+    label: 'Tile Match',
     icons: ['rainbow', 'cloud', 'flower'] as IconName[],
-    playable: false,
+    playable: true,
     color: '#a0e7e5',
   },
   {

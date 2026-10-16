@@ -6,108 +6,26 @@ import {
   levels,
   LEVEL_COUNT,
   makeRound,
+  TILE_LEVEL_COUNT,
   type IconName,
   type Option,
   type Round,
 } from './gameData'
 import { Icon } from './icons'
+import TileGame from './TileGame'
+import { ColorGlyph, HoldButton, HomeGlyph, ReplayGlyph, SpeakerGlyph, iconLabel, loadFlag, saveFlag } from './ui'
 import * as sound from './sound'
 
-type Screen = 'home' | 'game' | 'winner'
+type Screen = 'home' | 'game' | 'tiles' | 'winner'
+type GameId = 'pattern' | 'tiles'
 
-const iconLabel = (name: IconName) => name.replace(/([A-Z])/g, ' $1').toLowerCase()
-
-function HomeGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden focusable="false">
-      <path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="currentColor" />
-    </svg>
-  )
-}
-
-function SpeakerGlyph({ off }: { off: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden focusable="false">
-      <path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor" />
-      {off ? (
-        <path d="M16 9l5 6m0-6-5 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      ) : (
-        <path
-          d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          fill="none"
-        />
-      )}
-    </svg>
-  )
-}
-
-function ReplayGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden focusable="false">
-      <path
-        d="M12 5a7 7 0 1 1-6.6 4.7"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-        fill="none"
-      />
-      <path d="M12 1.5 7.5 5 12 8.5z" fill="currentColor" />
-    </svg>
-  )
-}
-
-/** A button that must be held for a moment, so little fingers can't leave the game by accident. */
-function HoldButton({
-  onHold,
-  label,
-  children,
-}: {
-  onHold: () => void
-  label: string
-  children: React.ReactNode
-}) {
-  const timer = useRef<number | undefined>(undefined)
-  const [holding, setHolding] = useState(false)
-
-  const cancel = () => {
-    window.clearTimeout(timer.current)
-    setHolding(false)
-  }
-  const start = () => {
-    window.clearTimeout(timer.current)
-    setHolding(true)
-    timer.current = window.setTimeout(() => {
-      setHolding(false)
-      onHold()
-    }, 700)
-  }
-  useEffect(() => () => window.clearTimeout(timer.current), [])
-
-  return (
-    <button
-      className={`round-btn hold ${holding ? 'holding' : ''}`}
-      aria-label={label}
-      onPointerDown={start}
-      onPointerUp={cancel}
-      onPointerLeave={cancel}
-      onPointerCancel={cancel}
-      onBlur={cancel}
-      onKeyDown={(e) => {
-        if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) start()
-      }}
-      onKeyUp={cancel}
-      onContextMenu={(e) => e.preventDefault()}
-    >
-      {children}
-    </button>
-  )
-}
+const BW_KEY = 'tfg.bw'
+const MUTE_KEY = 'tfg.muted'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home')
+  const [activeGame, setActiveGame] = useState<GameId>('pattern')
+  const [runId, setRunId] = useState(0) // changes every time Tile Match starts, so it begins fresh
   const [levelIndex, setLevelIndex] = useState(0)
   const [round, setRound] = useState<Round | null>(null)
   const [found, setFound] = useState<number[]>([])
@@ -115,7 +33,8 @@ export default function App() {
   const [wobbleId, setWobbleId] = useState<number | null>(null)
   const [celebrating, setCelebrating] = useState(false)
   const [hint, setHint] = useState(false)
-  const [muted, setMuted] = useState(false)
+  const [muted, setMuted] = useState(() => loadFlag(MUTE_KEY))
+  const [bw, setBw] = useState(() => loadFlag(BW_KEY))
   const [wiggleCard, setWiggleCard] = useState<string | null>(null)
 
   const timers = useRef<number[]>([])
@@ -130,7 +49,16 @@ export default function App() {
   }
   useEffect(() => clearTimers, [])
 
-  // Gently nudge the remaining matches if the child pauses for a while.
+  // Black-and-white mode is a grayscale filter on the whole page (including confetti).
+  useEffect(() => {
+    document.documentElement.classList.toggle('bw', bw)
+  }, [bw])
+
+  useEffect(() => {
+    sound.setMuted(muted)
+  }, [muted])
+
+  // Pattern Match: gently nudge the remaining matches if the child pauses for a while.
   useEffect(() => {
     if (screen !== 'game' || celebrating) return
     setHint(false)
@@ -163,6 +91,7 @@ export default function App() {
     clearTimers()
     const r = makeRound(index + 1, lastReference.current)
     lastReference.current = r.reference
+    setActiveGame('pattern')
     setLevelIndex(index)
     setRound(r)
     setFound([])
@@ -173,6 +102,15 @@ export default function App() {
     setScreen('game')
   }
 
+  const startTiles = () => {
+    clearTimers()
+    setActiveGame('tiles')
+    setRunId((n) => n + 1)
+    setScreen('tiles')
+  }
+
+  const startGame = (game: GameId) => (game === 'tiles' ? startTiles() : beginLevel(0))
+
   const goHome = () => {
     clearTimers()
     setCelebrating(false)
@@ -182,17 +120,27 @@ export default function App() {
   const toggleMute = () => {
     const next = !muted
     setMuted(next)
+    saveFlag(MUTE_KEY, next)
     sound.setMuted(next)
     if (!next) sound.playTap()
   }
 
+  const toggleColor = () => {
+    const next = !bw
+    setBw(next)
+    saveFlag(BW_KEY, next)
+    sound.playTap()
+  }
+
   const onCardTap = (id: string, playable: boolean) => {
     sound.playTap()
-    if (playable) {
-      beginLevel(0)
-    } else {
+    if (!playable) {
       setWiggleCard(id)
       later(() => setWiggleCard(null), 600)
+    } else if (id === 'tiles') {
+      startTiles()
+    } else {
+      beginLevel(0)
     }
   }
 
@@ -229,7 +177,7 @@ export default function App() {
     }
   }
 
-  const topRight = (
+  const soundButton = (
     <button
       className="round-btn sound-btn"
       onClick={toggleMute}
@@ -240,17 +188,29 @@ export default function App() {
     </button>
   )
 
+  const finishedLevels = activeGame === 'tiles' ? TILE_LEVEL_COUNT : LEVEL_COUNT
+
   return (
     <div className="app-root">
       {screen === 'home' && (
         <>
           <header className="topbar">
-            <div className="topbar-side" />
+            <div className="topbar-side">
+              <button
+                className="round-btn color-btn"
+                onClick={toggleColor}
+                aria-label={bw ? 'Switch to colour' : 'Switch to black and white'}
+                aria-pressed={bw}
+                title={bw ? 'Switch to colour' : 'Switch to black and white'}
+              >
+                <ColorGlyph bw={bw} />
+              </button>
+            </div>
             <div className="titles">
               <h1 className="title">Playful Patterns</h1>
               <p className="subtitle">Tap the shapes that match</p>
             </div>
-            <div className="topbar-side right">{topRight}</div>
+            <div className="topbar-side right">{soundButton}</div>
           </header>
 
           <main className="home">
@@ -300,7 +260,7 @@ export default function App() {
                 />
               ))}
             </div>
-            {topRight}
+            {soundButton}
           </header>
 
           <section className="reference" aria-label="Find this one">
@@ -341,7 +301,7 @@ export default function App() {
                 <button
                   key={o.id}
                   className={cls}
-                  style={{ animationDelay: `${i * 40}ms` }}
+                  style={{ '--d': `${i * 40}ms` } as React.CSSProperties}
                   onClick={() => onOptionTap(o)}
                   aria-pressed={isFound}
                   aria-label={`${iconLabel(o.icon)}${isFound ? ', found' : ''}`}
@@ -374,9 +334,18 @@ export default function App() {
         </main>
       )}
 
+      {screen === 'tiles' && (
+        <TileGame
+          key={runId}
+          onHome={goHome}
+          onFinished={() => setScreen('winner')}
+          soundButton={soundButton}
+        />
+      )}
+
       {screen === 'winner' && (
         <main className="winner">
-          <div className="winner-top">{topRight}</div>
+          <div className="winner-top">{soundButton}</div>
           <div className="trophy" aria-hidden>
             <Icon name="star" />
             <div className="sparkle s1">✦</div>
@@ -384,7 +353,7 @@ export default function App() {
             <div className="sparkle s3">✦</div>
           </div>
           <h2>You did it!</h2>
-          <p className="muted">All {LEVEL_COUNT} levels finished. You're a star!</p>
+          <p className="muted">All {finishedLevels} levels finished. You're a star!</p>
           <div className="winner-buttons">
             <div className="big-action">
               <button className="big-round home" onClick={goHome} aria-label="Home">
@@ -393,7 +362,7 @@ export default function App() {
               <span>Home</span>
             </div>
             <div className="big-action">
-              <button className="big-round again" onClick={() => beginLevel(0)} aria-label="Play again">
+              <button className="big-round again" onClick={() => startGame(activeGame)} aria-label="Play again">
                 <ReplayGlyph />
               </button>
               <span>Again</span>
@@ -402,7 +371,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && (
+      {screen !== 'game' && screen !== 'tiles' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>
