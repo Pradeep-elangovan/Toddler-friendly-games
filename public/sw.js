@@ -1,53 +1,57 @@
-const CACHE_NAME = 'toddler-games-v1';
-const URLS_TO_CACHE = ['/', '/index.html', '/manifest.json', '/sw.js'];
+// Bump this when the caching strategy changes; old caches are deleted on activate.
+const CACHE_NAME = 'toddler-games-v2';
+const APP_SHELL = ['/', '/index.html', '/manifest.json'];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(URLS_TO_CACHE))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-          return Promise.resolve();
-        })
-      )
-    )
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
+
+function cachePut(request, response) {
+  // Only cache good same-origin responses.
+  if (!response || !response.ok || response.type !== 'basic') return;
+  const copy = response.clone();
+  caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)).catch(() => {});
+}
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  // Only handle GET requests
   if (req.method !== 'GET') return;
+  if (new URL(req.url).origin !== self.location.origin) return;
 
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req)
+  // Pages: network first, so a new deploy shows up right away; fall back to the cached shell offline.
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req)
         .then((res) => {
-          // Cache the response for future offline use (cache-first dynamic)
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            try {
-              cache.put(req, copy);
-            } catch (e) {
-              // ignore
-            }
-          });
+          cachePut('/index.html', res.clone());
           return res;
         })
-        .catch(() => {
-          // Fallback to index.html for navigation requests (app shell)
-          if (req.mode === 'navigate') return caches.match('/index.html');
-          return new Response('', { status: 503, statusText: 'Offline' });
-        });
-    })
+        .catch(() => caches.match('/index.html').then((r) => r || caches.match('/')))
+    );
+    return;
+  }
+
+  // Everything else (hashed JS/CSS, icons): cache first, filled in as files are fetched.
+  event.respondWith(
+    caches.match(req).then(
+      (cached) =>
+        cached ||
+        fetch(req)
+          .then((res) => {
+            cachePut(req, res);
+            return res;
+          })
+          .catch(() => new Response('', { status: 503, statusText: 'Offline' }))
+    )
   );
 });

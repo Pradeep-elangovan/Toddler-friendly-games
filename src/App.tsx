@@ -1,290 +1,412 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
-import { levels, cards, iconNames } from './gameData'
+import {
+  cards,
+  columnsFor,
+  levels,
+  LEVEL_COUNT,
+  makeRound,
+  type IconName,
+  type Option,
+  type Round,
+} from './gameData'
+import { Icon } from './icons'
+import * as sound from './sound'
 
 type Screen = 'home' | 'game' | 'winner'
 
-function Icon({ name, className = '' }: { name: string; className?: string }) {
-  const size = 56
-  const props = { width: size, height: size, viewBox: '0 0 24 24', className }
-  switch (name) {
-    case 'pencil':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M3 21v-3.75L17.81 2.44a2 2 0 012.83 0l0 0a2 2 0 010 2.83L6 20.08H3z" fill="currentColor" />
-        </svg>
-      )
-    case 'iceCream':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M12 2a4 4 0 00-4 4c0 1.1.45 2.1 1.17 2.83L12 12l2.83-3.17A3.99 3.99 0 0016 6a4 4 0 00-4-4z" fill="currentColor" />
-        </svg>
-      )
-    case 'star':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M12 2l2.9 6.26L21 9.27l-5 3.73L17.8 21 12 17.77 6.2 21 7 13l-5-3.73 6.1-.99L12 2z" fill="currentColor" />
-        </svg>
-      )
-    case 'heart':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M12 21s-7-4.35-9-6.32C1.5 12.7 2 9.5 4.5 7.64 6.7 6 9.5 7 12 9c2.5-2 5.3-3 7.5-1.36C22 9.5 22.5 12.7 21 14.68 19 16.65 12 21 12 21z" fill="currentColor" />
-        </svg>
-      )
-    case 'apple':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M16 11c-.1-2 1-4 2-5-1-.7-2.6-1.2-4-1-1 0-2 1-3 1s-2-1-3-1A6 6 0 005 12c0 3 3 6 7 6s7-3 7-6c0-.3 0-.6-.2-1z" fill="currentColor" />
-        </svg>
-      )
-    case 'moon':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M21 12.8A9 9 0 1111.2 3 7 7 0 0021 12.8z" fill="currentColor" />
-        </svg>
-      )
-    case 'flower':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M12 2a2 2 0 012 2 6 6 0 016 6 2 2 0 01-2 2 6 6 0 01-6 6 2 2 0 01-2-2 6 6 0 01-6-6 2 2 0 012-2 6 6 0 016-6z" fill="currentColor" />
-        </svg>
-      )
-    case 'rocket':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M5 20l4-1 1-4L4 5 2 9l3 11zM19 5l-4 4 2 2 4-4-2-2z" fill="currentColor" />
-        </svg>
-      )
-    case 'cloud':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M20 17H7a4 4 0 010-8 6 6 0 1111 2 4 4 0 01-2 6z" fill="currentColor" />
-        </svg>
-      )
-    case 'book':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M4 3v16a1 1 0 001 1h13V3H5a1 1 0 00-1 0z" fill="currentColor" />
-        </svg>
-      )
-    case 'rainbow':
-      return (
-        <svg {...props} aria-hidden>
-          <path d="M2 12a10 10 0 0120 0h-2a8 8 0 10-16 0H2z" fill="currentColor" />
-        </svg>
-      )
-    default:
-      return (
-        <svg {...props} aria-hidden>
-          <circle cx="12" cy="12" r="10" fill="currentColor" />
-        </svg>
-      )
-  }
+const iconLabel = (name: IconName) => name.replace(/([A-Z])/g, ' $1').toLowerCase()
+
+function HomeGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden focusable="false">
+      <path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="currentColor" />
+    </svg>
+  )
 }
 
-function shuffle<T>(arr: T[]) {
-  const a = arr.slice()
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
+function SpeakerGlyph({ off }: { off: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden focusable="false">
+      <path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor" />
+      {off ? (
+        <path d="M16 9l5 6m0-6-5 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      ) : (
+        <path
+          d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="none"
+        />
+      )}
+    </svg>
+  )
+}
+
+function ReplayGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden focusable="false">
+      <path
+        d="M12 5a7 7 0 1 1-6.6 4.7"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path d="M12 1.5 7.5 5 12 8.5z" fill="currentColor" />
+    </svg>
+  )
+}
+
+/** A button that must be held for a moment, so little fingers can't leave the game by accident. */
+function HoldButton({
+  onHold,
+  label,
+  children,
+}: {
+  onHold: () => void
+  label: string
+  children: React.ReactNode
+}) {
+  const timer = useRef<number | undefined>(undefined)
+  const [holding, setHolding] = useState(false)
+
+  const cancel = () => {
+    window.clearTimeout(timer.current)
+    setHolding(false)
   }
-  return a
+  const start = () => {
+    window.clearTimeout(timer.current)
+    setHolding(true)
+    timer.current = window.setTimeout(() => {
+      setHolding(false)
+      onHold()
+    }, 700)
+  }
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  return (
+    <button
+      className={`round-btn hold ${holding ? 'holding' : ''}`}
+      aria-label={label}
+      onPointerDown={start}
+      onPointerUp={cancel}
+      onPointerLeave={cancel}
+      onPointerCancel={cancel}
+      onBlur={cancel}
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) start()
+      }}
+      onKeyUp={cancel}
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      {children}
+    </button>
+  )
 }
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('home')
-  const [levelIndex, setLevelIndex] = useState(0) // 0..9
-  const level = levels[levelIndex]
-  const [selected, setSelected] = useState<Record<string, boolean>>({})
-  const [options, setOptions] = useState<string[]>([])
-  const [showCongrats, setShowCongrats] = useState(false)
-  const [wrongShake, setWrongShake] = useState<string | null>(null)
+  const [levelIndex, setLevelIndex] = useState(0)
+  const [round, setRound] = useState<Round | null>(null)
+  const [found, setFound] = useState<number[]>([])
+  const [wrongIds, setWrongIds] = useState<number[]>([])
+  const [wobbleId, setWobbleId] = useState<number | null>(null)
+  const [celebrating, setCelebrating] = useState(false)
+  const [hint, setHint] = useState(false)
+  const [muted, setMuted] = useState(false)
+  const [wiggleCard, setWiggleCard] = useState<string | null>(null)
 
+  const timers = useRef<number[]>([])
+  const lastReference = useRef<IconName | undefined>(undefined)
+
+  const later = (fn: () => void, ms: number) => {
+    timers.current.push(window.setTimeout(fn, ms))
+  }
+  const clearTimers = () => {
+    timers.current.forEach((id) => window.clearTimeout(id))
+    timers.current = []
+  }
+  useEffect(() => clearTimers, [])
+
+  // Gently nudge the remaining matches if the child pauses for a while.
   useEffect(() => {
-    // register service worker on window load
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('/sw.js')
-          .catch(() => {
-            /* ignore registration errors */
-          })
+    if (screen !== 'game' || celebrating) return
+    setHint(false)
+    const id = window.setTimeout(() => setHint(true), 7000)
+    return () => window.clearTimeout(id)
+  }, [screen, celebrating, found, wrongIds, round])
+
+  // Finale: fanfare and confetti.
+  useEffect(() => {
+    if (screen !== 'winner') return
+    sound.playGameWin()
+    const fire = () =>
+      confetti({
+        particleCount: 90,
+        spread: 90,
+        startVelocity: 38,
+        origin: { x: Math.random() * 0.6 + 0.2, y: 0.55 },
+        disableForReducedMotion: true,
       })
+    fire()
+    const a = window.setTimeout(fire, 600)
+    const b = window.setTimeout(fire, 1300)
+    return () => {
+      window.clearTimeout(a)
+      window.clearTimeout(b)
     }
-  }, [])
+  }, [screen])
 
-  useEffect(() => {
-    // reset selections when level changes or screen changes
-    setSelected({})
-    setShowCongrats(false)
-    setWrongShake(null)
-    if (screen === 'game') {
-      const base = [...iconNames]
-      // choose correct icons (first N)
-      const correct = base.slice(0, level.correctCount)
-      // fill options: correct + some others
-      const others = base.filter((n) => !correct.includes(n))
-      const pick = others.slice(0, level.optionsCount - correct.length)
-      const all = shuffle([...correct, ...pick])
-      setOptions(all)
+  const beginLevel = (index: number) => {
+    clearTimers()
+    const r = makeRound(index + 1, lastReference.current)
+    lastReference.current = r.reference
+    setLevelIndex(index)
+    setRound(r)
+    setFound([])
+    setWrongIds([])
+    setWobbleId(null)
+    setCelebrating(false)
+    setHint(false)
+    setScreen('game')
+  }
+
+  const goHome = () => {
+    clearTimers()
+    setCelebrating(false)
+    setScreen('home')
+  }
+
+  const toggleMute = () => {
+    const next = !muted
+    setMuted(next)
+    sound.setMuted(next)
+    if (!next) sound.playTap()
+  }
+
+  const onCardTap = (id: string, playable: boolean) => {
+    sound.playTap()
+    if (playable) {
+      beginLevel(0)
+    } else {
+      setWiggleCard(id)
+      later(() => setWiggleCard(null), 600)
     }
-  }, [levelIndex, screen])
+  }
 
-  const checkAnswer = (id: string) => {
-    if (showCongrats) return
-    const isCorrect = iconNames.slice(0, level.correctCount).includes(id)
-    if (isCorrect) {
-      setSelected((s) => ({ ...s, [id]: true }))
-      const correctSelected = options.filter((o) =>
-        iconNames.slice(0, level.correctCount).includes(o) && (selected[o] || o === id)
-      ).length
-      if (correctSelected >= level.correctCount) {
-        // level complete
-        setShowCongrats(true)
-        // confetti
-        confetti({ particleCount: 60, spread: 50, origin: { y: 0.6 } })
-        // auto advance after short delay
-        setTimeout(() => {
-          if (levelIndex < levels.length - 1) {
-            setLevelIndex((i) => i + 1)
-          } else {
-            setScreen('winner')
-          }
-        }, 1500)
+  const onOptionTap = (o: Option) => {
+    if (!round || celebrating) return
+    if (found.includes(o.id) || wrongIds.includes(o.id)) return
+
+    if (o.isMatch) {
+      const nextFound = [...found, o.id]
+      setFound(nextFound)
+      sound.playCorrect(nextFound.length - 1)
+      if (nextFound.length === levels[levelIndex].matchCount) {
+        setCelebrating(true)
+        later(() => {
+          sound.playLevelWin()
+          confetti({
+            particleCount: 70,
+            spread: 70,
+            origin: { y: 0.6 },
+            disableForReducedMotion: true,
+          })
+        }, 250)
+        later(() => {
+          if (levelIndex < LEVEL_COUNT - 1) beginLevel(levelIndex + 1)
+          else setScreen('winner')
+        }, 2000)
       }
     } else {
-      // wrong tap: gentle shake
-      setWrongShake(id)
-      setTimeout(() => setWrongShake(null), 400)
+      // gentle: soft boop, a little wobble, and the wrong one fades away so the next try is easier
+      sound.playWrong()
+      setWobbleId(o.id)
+      setWrongIds((w) => [...w, o.id])
+      later(() => setWobbleId(null), 450)
     }
   }
 
-  const startGame = () => {
-    setLevelIndex(0)
-    setScreen('game')
-  }
-
-  const playAgain = () => {
-    setLevelIndex(0)
-    setScreen('game')
-  }
+  const topRight = (
+    <button
+      className="round-btn sound-btn"
+      onClick={toggleMute}
+      aria-label={muted ? 'Turn sound on' : 'Turn sound off'}
+      aria-pressed={muted}
+    >
+      <SpeakerGlyph off={muted} />
+    </button>
+  )
 
   return (
     <div className="app-root">
-      <header className="topbar">
-        <h1 className="title">Playful Patterns</h1>
-        <p className="subtitle">Tap the shapes that match</p>
-      </header>
-
       {screen === 'home' && (
-        <main className="home">
-          <div className="cards">
-            {cards.map((c) => (
-              <button
-                key={c.id}
-                className={`card ${c.playable ? 'playable' : 'coming'}`}
-                onClick={() => (c.playable ? startGame() : undefined)}
-                aria-label={c.playable ? `Play ${c.label}` : `${c.label} coming soon`}
-              >
-                <div className="card-icons">
-                  {c.icons.map((ic) => (
-                    <div className="card-icon" key={ic} aria-hidden>
-                      <Icon name={ic} />
+        <>
+          <header className="topbar">
+            <div className="topbar-side" />
+            <div className="titles">
+              <h1 className="title">Playful Patterns</h1>
+              <p className="subtitle">Tap the shapes that match</p>
+            </div>
+            <div className="topbar-side right">{topRight}</div>
+          </header>
+
+          <main className="home">
+            <div className="cards">
+              {cards.map((c) => (
+                <button
+                  key={c.id}
+                  className={`card ${c.playable ? 'playable' : 'coming'} ${wiggleCard === c.id ? 'wiggle' : ''}`}
+                  style={{ '--card-bg': c.color } as React.CSSProperties}
+                  onClick={() => onCardTap(c.id, c.playable)}
+                  aria-label={c.playable ? `Play ${c.label}` : `${c.label}, coming soon`}
+                  aria-disabled={!c.playable}
+                >
+                  <div className="card-icons" aria-hidden>
+                    {c.icons.map((ic) => (
+                      <div className="card-icon" key={ic}>
+                        <Icon name={ic} />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="card-label">{c.label}</div>
+                  {c.playable ? (
+                    <div className="play-badge" aria-hidden>
+                      ▶
                     </div>
-                  ))}
-                </div>
-                <div className="card-label">{c.label}</div>
-                {!c.playable && <div className="coming-text">Coming soon</div>}
-              </button>
-            ))}
-          </div>
-        </main>
-      )}
-
-      {screen === 'game' && (
-        <main className="game">
-          <section className="level-info">
-            <div className="level-pill">Level {level.level}</div>
-            <div className="level-progress">{level.correctCount} to find</div>
-          </section>
-
-          <section className="reference" aria-label="Reference shapes">
-            <div className="reference-grid">
-              {iconNames.slice(0, level.correctCount).map((n) => (
-                <div key={n} className="ref-cell">
-                  <Icon name={n} />
-                </div>
+                  ) : (
+                    <div className="coming-text">Coming soon</div>
+                  )}
+                </button>
               ))}
             </div>
-          </section>
+          </main>
+        </>
+      )}
 
-          <section className="options" aria-label="Options to choose">
-            <div className="options-grid">
-              {options.map((o) => {
-                const isSelected = !!selected[o]
-                const isCorrect = iconNames.slice(0, level.correctCount).includes(o)
-                return (
-                  <button
-                    key={o}
-                    onClick={() => checkAnswer(o)}
-                    className={`option ${isSelected ? 'selected' : ''} ${wrongShake === o ? 'shake' : ''}`}
-                    aria-pressed={isSelected}
-                    aria-label={`Option ${o}`}
-                  >
-                    <Icon name={o} />
-                  </button>
-                )
-              })}
+      {screen === 'game' && round && (
+        <main className="game">
+          <header className="gamebar">
+            <HoldButton onHold={goHome} label="Hold to go home">
+              <HomeGlyph />
+            </HoldButton>
+            <div className="dots" role="img" aria-label={`Level ${levelIndex + 1} of ${LEVEL_COUNT}`}>
+              {levels.map((l, i) => (
+                <span
+                  key={l.level}
+                  className={`dot ${i < levelIndex ? 'done' : ''} ${i === levelIndex ? 'current' : ''}`}
+                />
+              ))}
             </div>
+            {topRight}
+          </header>
+
+          <section className="reference" aria-label="Find this one">
+            <div className="ref-card" key={`${levelIndex}-${round.reference}`}>
+              <Icon name={round.reference} />
+            </div>
+            <div className="ref-stars" aria-hidden>
+              {Array.from({ length: levels[levelIndex].matchCount }, (_, i) => (
+                <span key={i} className={i < found.length ? 'on' : ''}>
+                  ★
+                </span>
+              ))}
+            </div>
+            <p className="sr-only" aria-live="polite">
+              Found {found.length} of {levels[levelIndex].matchCount} {iconLabel(round.reference)}
+            </p>
           </section>
 
-          {showCongrats && (
-            <div className="overlay">
+          <section
+            className="options"
+            style={{ '--cols': columnsFor(round.options.length) } as React.CSSProperties}
+            aria-label="Tap every one that matches"
+            key={`options-${levelIndex}-${round.reference}`}
+          >
+            {round.options.map((o, i) => {
+              const isFound = found.includes(o.id)
+              const isWrong = wrongIds.includes(o.id)
+              const cls = [
+                'option',
+                isFound ? 'found' : '',
+                isWrong ? 'oops' : '',
+                wobbleId === o.id ? 'shake' : '',
+                hint && o.isMatch && !isFound ? 'hint' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')
+              return (
+                <button
+                  key={o.id}
+                  className={cls}
+                  style={{ animationDelay: `${i * 40}ms` }}
+                  onClick={() => onOptionTap(o)}
+                  aria-pressed={isFound}
+                  aria-label={`${iconLabel(o.icon)}${isFound ? ', found' : ''}`}
+                >
+                  <Icon name={o.icon} />
+                  {isFound && (
+                    <span className="check" aria-hidden>
+                      ✓
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </section>
+
+          {celebrating && (
+            <div className="overlay" role="status">
               <div className="congrats">
+                <div className="big-star" aria-hidden>
+                  <Icon name="star" />
+                </div>
                 <h2>Great job!</h2>
-                {levelIndex < levels.length - 1 ? (
-                  <button
-                    className="primary"
-                    onClick={() => setLevelIndex((i) => Math.min(i + 1, levels.length - 1))}
-                  >
-                    Next
-                  </button>
-                ) : (
-                  <div className="primary muted">Final!</div>
-                )}
               </div>
             </div>
           )}
 
-          <div className="bottom-controls">
-            <button onClick={() => setScreen('home')} className="secondary" aria-label="Back to home">
-              Home
-            </button>
-          </div>
+          <footer className="game-footer">
+            <small>Grown-ups: hold the home button to exit</small>
+          </footer>
         </main>
       )}
 
       {screen === 'winner' && (
         <main className="winner">
-          <div className="meditate">
-            <div className="kid">
-              <div className="head" />
-              <div className="body" />
-            </div>
+          <div className="winner-top">{topRight}</div>
+          <div className="trophy" aria-hidden>
+            <Icon name="star" />
+            <div className="sparkle s1">✦</div>
+            <div className="sparkle s2">✦</div>
+            <div className="sparkle s3">✦</div>
           </div>
-          <h2>You're a star!</h2>
-          <p className="muted">Nice calm finish — great work!</p>
+          <h2>You did it!</h2>
+          <p className="muted">All {LEVEL_COUNT} levels finished. You're a star!</p>
           <div className="winner-buttons">
-            <button className="primary" onClick={() => setScreen('home')}>Home</button>
-            <button className="secondary" onClick={playAgain}>Play again</button>
+            <div className="big-action">
+              <button className="big-round home" onClick={goHome} aria-label="Home">
+                <HomeGlyph />
+              </button>
+              <span>Home</span>
+            </div>
+            <div className="big-action">
+              <button className="big-round again" onClick={() => beginLevel(0)} aria-label="Play again">
+                <ReplayGlyph />
+              </button>
+              <span>Again</span>
+            </div>
           </div>
         </main>
       )}
 
-      <footer className="footer">
-        <small>All local · No accounts · No tracking</small>
-      </footer>
+      {screen !== 'game' && (
+        <footer className="footer">
+          <small>All local · No accounts · No tracking</small>
+        </footer>
+      )}
     </div>
   )
 }

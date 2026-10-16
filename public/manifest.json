@@ -3,7 +3,8 @@
   "short_name": "ToddlerGames",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#fff3d6",
+  "theme_color": "#fff3d6",
   "description": "Small offline-first toddler friendly pattern match game",
   "icons": []
 }
