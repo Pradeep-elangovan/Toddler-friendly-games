@@ -51,6 +51,11 @@ export function playWrong() {
   tone(185, 0.12, 0.22, 'sine', 0.12)
 }
 
+/** A soft, slow "aww" for a lost run: three gently falling notes (sad, but never scary). */
+export function playFail() {
+  ;[392.0, 329.63, 261.63].forEach((f, i) => tone(f, i * 0.2, 0.42, 'sine', 0.16))
+}
+
 /** Little cheer when a level is finished. */
 export function playLevelWin() {
   ;[523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, i * 0.11, 0.3, 'triangle', 0.18))

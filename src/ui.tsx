@@ -40,6 +40,20 @@ export function ReplayGlyph() {
   )
 }
 
+/** A sad (but friendly) face with a tear, for the "Oops" screen. */
+export function SadFace() {
+  return (
+    <svg viewBox="0 0 64 64" className="icon" aria-hidden focusable="false">
+      <circle cx="32" cy="32" r="27" fill="#fde047" stroke="#f59e0b" strokeWidth="3" />
+      <path d="M16 22 L27 26 M48 22 L37 26" stroke="#7c4a1e" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="23" cy="33" r="3.4" fill="#7c4a1e" />
+      <circle cx="41" cy="33" r="3.4" fill="#7c4a1e" />
+      <path d="M21 48 Q32 38 43 48" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+      <path d="M47 38 Q43 44 47 47 Q51 44 47 38Z" fill="#60a5fa" stroke="#2563eb" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 /**
  * Colour / black-and-white switch icon.
  * In colour mode: a four-colour disc. In black-and-white mode: a half black, half white disc.

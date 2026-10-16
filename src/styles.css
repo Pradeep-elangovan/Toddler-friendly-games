@@ -397,7 +397,7 @@ button:focus-visible {
   height: auto; /* height follows the icon's own square shape */
 }
 
-.option:active:not(.found):not(.oops) {
+.option:active:not(.found):not(.failed) {
   transform: scale(0.94);
 }
 
@@ -424,11 +424,16 @@ button:focus-visible {
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
 }
 
-.option.oops {
-  opacity: 0.35;
-  filter: grayscale(0.8);
+/* the wrong tile the child tapped: red, a shake, and a cross (the cross also works in black-and-white mode) */
+.option.failed {
+  background: linear-gradient(135deg, #ffe3e3, #ffb8b8);
+  border-color: #ef4444;
   cursor: default;
-  box-shadow: none;
+  animation: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms) backwards, shake 0.5s ease 0ms;
+}
+
+.option .check.cross {
+  background: #ef4444;
 }
 
 /* pop-in is listed again so it keeps its finished state instead of replaying when shake/hint ends */
@@ -588,6 +593,28 @@ button:focus-visible {
 
 .big-round:active {
   transform: translateY(3px) scale(0.97);
+}
+
+/* ---------- "Oops" screen (Pattern Match, after a wrong tap) ---------- */
+
+.sad-wrap {
+  width: 170px;
+  height: 170px;
+  animation: sway 2.6s ease-in-out infinite;
+}
+
+.failed-screen h2 {
+  color: #4dabf7;
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: rotate(4deg) translateY(4px);
+  }
 }
 
 /* ---------- animations ---------- */

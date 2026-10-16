@@ -13,10 +13,20 @@ import {
 } from './gameData'
 import { Icon } from './icons'
 import TileGame from './TileGame'
-import { ColorGlyph, HoldButton, HomeGlyph, ReplayGlyph, SpeakerGlyph, iconLabel, loadFlag, saveFlag } from './ui'
+import {
+  ColorGlyph,
+  HoldButton,
+  HomeGlyph,
+  ReplayGlyph,
+  SadFace,
+  SpeakerGlyph,
+  iconLabel,
+  loadFlag,
+  saveFlag,
+} from './ui'
 import * as sound from './sound'
 
-type Screen = 'home' | 'game' | 'tiles' | 'winner'
+type Screen = 'home' | 'game' | 'tiles' | 'winner' | 'failed'
 type GameId = 'pattern' | 'tiles'
 
 const BW_KEY = 'tfg.bw'
@@ -29,8 +39,7 @@ export default function App() {
   const [levelIndex, setLevelIndex] = useState(0)
   const [round, setRound] = useState<Round | null>(null)
   const [found, setFound] = useState<number[]>([])
-  const [wrongIds, setWrongIds] = useState<number[]>([])
-  const [wobbleId, setWobbleId] = useState<number | null>(null)
+  const [failedId, setFailedId] = useState<number | null>(null) // the wrong option the child tapped
   const [celebrating, setCelebrating] = useState(false)
   const [hint, setHint] = useState(false)
   const [muted, setMuted] = useState(() => loadFlag(MUTE_KEY))
@@ -60,11 +69,11 @@ export default function App() {
 
   // Pattern Match: gently nudge the remaining matches if the child pauses for a while.
   useEffect(() => {
-    if (screen !== 'game' || celebrating) return
+    if (screen !== 'game' || celebrating || failedId !== null) return
     setHint(false)
     const id = window.setTimeout(() => setHint(true), 7000)
     return () => window.clearTimeout(id)
-  }, [screen, celebrating, found, wrongIds, round])
+  }, [screen, celebrating, failedId, found, round])
 
   // Finale: fanfare and confetti.
   useEffect(() => {
@@ -95,8 +104,7 @@ export default function App() {
     setLevelIndex(index)
     setRound(r)
     setFound([])
-    setWrongIds([])
-    setWobbleId(null)
+    setFailedId(null)
     setCelebrating(false)
     setHint(false)
     setScreen('game')
@@ -145,8 +153,8 @@ export default function App() {
   }
 
   const onOptionTap = (o: Option) => {
-    if (!round || celebrating) return
-    if (found.includes(o.id) || wrongIds.includes(o.id)) return
+    if (!round || celebrating || failedId !== null) return
+    if (found.includes(o.id)) return
 
     if (o.isMatch) {
       const nextFound = [...found, o.id]
@@ -169,11 +177,11 @@ export default function App() {
         }, 2000)
       }
     } else {
-      // gentle: soft boop, a little wobble, and the wrong one fades away so the next try is easier
-      sound.playWrong()
-      setWobbleId(o.id)
-      setWrongIds((w) => [...w, o.id])
-      later(() => setWobbleId(null), 450)
+      // A wrong tap ends the run: show which tile was wrong, then the "Oops" screen.
+      // Playing again from Home starts at level 1.
+      sound.playFail()
+      setFailedId(o.id)
+      later(() => setScreen('failed'), 1100)
     }
   }
 
@@ -287,12 +295,11 @@ export default function App() {
           >
             {round.options.map((o, i) => {
               const isFound = found.includes(o.id)
-              const isWrong = wrongIds.includes(o.id)
+              const isFailed = failedId === o.id
               const cls = [
                 'option',
                 isFound ? 'found' : '',
-                isWrong ? 'oops' : '',
-                wobbleId === o.id ? 'shake' : '',
+                isFailed ? 'failed' : '',
                 hint && o.isMatch && !isFound ? 'hint' : '',
               ]
                 .filter(Boolean)
@@ -304,12 +311,17 @@ export default function App() {
                   style={{ '--d': `${i * 40}ms` } as React.CSSProperties}
                   onClick={() => onOptionTap(o)}
                   aria-pressed={isFound}
-                  aria-label={`${iconLabel(o.icon)}${isFound ? ', found' : ''}`}
+                  aria-label={`${iconLabel(o.icon)}${isFound ? ', found' : ''}${isFailed ? ', wrong' : ''}`}
                 >
                   <Icon name={o.icon} />
                   {isFound && (
                     <span className="check" aria-hidden>
                       ✓
+                    </span>
+                  )}
+                  {isFailed && (
+                    <span className="check cross" aria-hidden>
+                      ✕
                     </span>
                   )}
                 </button>
@@ -341,6 +353,26 @@ export default function App() {
           onFinished={() => setScreen('winner')}
           soundButton={soundButton}
         />
+      )}
+
+      {screen === 'failed' && (
+        <main className="winner failed-screen">
+          <div className="winner-top">{soundButton}</div>
+          <div className="sad-wrap" aria-hidden>
+            <SadFace />
+          </div>
+          <h2>Oops!</h2>
+          <p className="muted">That one was different. You got to level {levelIndex + 1}.</p>
+          <p className="muted">Go Home and try again from level 1.</p>
+          <div className="winner-buttons">
+            <div className="big-action">
+              <button className="big-round home" onClick={goHome} aria-label="Home">
+                <HomeGlyph />
+              </button>
+              <span>Home</span>
+            </div>
+          </div>
+        </main>
       )}
 
       {screen === 'winner' && (

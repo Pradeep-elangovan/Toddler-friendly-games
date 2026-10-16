@@ -23,6 +23,8 @@ There are 10 levels. Every level shows **one reference icon** at the top, then a
 
 The child taps every option that matches the reference. The reference icon is random each level, and the wrong icon is always a different one.
 
+**Mistakes end the run.** If the child taps the one that doesn't match, that tile turns red with a cross and a soft sad sound plays. Then an "Oops!" screen shows the level they reached, with a big Home button. Playing again from Home starts back at level 1. (Tile Match is gentler: wrong pairs just wobble and the child tries again.)
+
 ## Tile Match
 
 A mahjong-style board of icon tiles (4 x 4). Tap one tile, then another tile with the **same icon**, and both disappear. Clear the whole board to finish the level. There are 3 levels; the board stays the same size, but the icons get harder to tell apart:
@@ -36,7 +38,7 @@ A wrong pair just wobbles and both tiles go back, so there is no penalty. To cha
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.
-- Gentle feedback: a rising happy sound for each correct tap, a soft "boop" and wobble for a wrong tap, stars fill up as matches are found.
+- Gentle feedback: a rising happy sound for each correct tap, stars fill up as matches are found, and a soft falling "aww" (never a buzzer) when a Pattern Match run ends.
 - If a child pauses for a few seconds, a match softly pulses as a hint.
 - Progress dots at the top instead of text; confetti and a cheer after each level.
 - The Home button inside a game must be **held** for a moment, so little fingers can't leave by accident.
