@@ -55,7 +55,7 @@ Only the number of fruit and buckets grows. A fruit can be dropped into the wron
 
 ## Counting
 
-Level N (1 to 9) shows N of the same item in a tidy grid and asks "How many?". Pick the right number out of three (always between 1 and 9). Nothing else changes between levels. A wrong pick wobbles and fades so the child can try again; after 9 idle seconds the right number pulses. Tapping an item makes it bounce.
+Level N (1 to 9) shows N of the same item in a tidy grid and asks "How many?". Pick the right number out of three (always between 1 and 9). Nothing else changes between levels. A wrong pick ends the run, like Pattern Match: the number turns red, a sad sound plays and the "Oops" screen shows the level reached; playing again from Home starts at level 1. After 9 idle seconds the right number pulses. Tapping an item makes it bounce.
 
 ## Memory Match
 

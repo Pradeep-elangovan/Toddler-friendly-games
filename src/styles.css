@@ -1019,6 +1019,17 @@ button:focus-visible {
   display: block;
 }
 
+.count-option.failed {
+  background: #ef4444;
+  opacity: 1;
+  filter: none;
+  outline: 6px solid #fff;
+}
+
+.count-option.failed .count-num {
+  animation: shake 0.5s ease;
+}
+
 .count-num.shake {
   animation: shake 0.45s ease;
 }

@@ -10,6 +10,8 @@ type Props = {
   onHome: () => void
   /** called after the last level is cleared */
   onFinished: () => void
+  /** called after a wrong pick, with the level the child reached */
+  onFailed: (level: number) => void
   soundButton: React.ReactNode
 }
 
@@ -17,9 +19,10 @@ const NUMBER_COLORS = ['#ff8fa3', '#6cc3f5', '#7bd88f']
 
 /**
  * Counting: level N shows N of the same item (1 to 9). Pick the right number out of three.
- * A wrong pick just wobbles and fades so the child can try again; there are no extra tricks in later levels.
+ * A wrong pick ends the run: the number turns red, a sad sound plays and the "Oops" screen follows.
+ * There are no extra tricks in later levels.
  */
-export default function CountGame({ onHome, onFinished, soundButton }: Props) {
+export default function CountGame({ onHome, onFinished, onFailed, soundButton }: Props) {
   const lastIcon = useRef<IconName | undefined>(undefined)
   const make = (level: number): CountRound => {
     const r = makeCountRound(level, lastIcon.current)
@@ -28,8 +31,7 @@ export default function CountGame({ onHome, onFinished, soundButton }: Props) {
   }
   const [levelIndex, setLevelIndex] = useState(0)
   const [round, setRound] = useState<CountRound>(() => make(1))
-  const [wrong, setWrong] = useState<number[]>([])
-  const [shake, setShake] = useState<number | null>(null)
+  const [failed, setFailed] = useState<number | null>(null) // the wrong number the child tapped
   const [solved, setSolved] = useState(false)
   const [hint, setHint] = useState(false)
   const [bounced, setBounced] = useState<number | null>(null)
@@ -49,21 +51,20 @@ export default function CountGame({ onHome, onFinished, soundButton }: Props) {
   // If the child pauses for a while, gently pulse the right number.
   useEffect(() => {
     setHint(false)
-    if (solved) return
+    if (solved || failed !== null) return
     const id = window.setTimeout(() => setHint(true), 9000)
     return () => window.clearTimeout(id)
-  }, [round, wrong, solved])
+  }, [round, failed, solved])
 
   const beginLevel = (index: number) => {
     setLevelIndex(index)
     setRound(make(index + 1))
-    setWrong([])
-    setShake(null)
+    setFailed(null)
     setSolved(false)
   }
 
   const onPick = (n: number) => {
-    if (solved || wrong.includes(n)) return
+    if (solved || failed !== null) return
     if (n === round.count) {
       setSolved(true)
       sound.playCorrect(levelIndex)
@@ -76,12 +77,10 @@ export default function CountGame({ onHome, onFinished, soundButton }: Props) {
         else onFinished()
       }, 2000)
     } else {
-      sound.playWrong()
-      setShake(n)
-      later(() => {
-        setShake(null)
-        setWrong((w) => [...w, n])
-      }, 450)
+      // A wrong pick ends the run; playing again from Home starts at level 1.
+      sound.playFail()
+      setFailed(n)
+      later(() => onFailed(levelIndex + 1), 1100)
     }
   }
 
@@ -145,7 +144,8 @@ export default function CountGame({ onHome, onFinished, soundButton }: Props) {
             'count-option',
             solved && n === round.count ? 'right' : '',
             solved && n !== round.count ? 'faded' : '',
-            wrong.includes(n) ? 'faded' : '',
+            failed === n ? 'failed' : '',
+            failed !== null && failed !== n ? 'faded' : '',
           ]
             .filter(Boolean)
             .join(' ')
@@ -156,9 +156,9 @@ export default function CountGame({ onHome, onFinished, soundButton }: Props) {
               style={{ '--c': NUMBER_COLORS[i % NUMBER_COLORS.length], '--d': `${i * 60}ms` } as React.CSSProperties}
               onClick={() => onPick(n)}
               aria-label={`${n}`}
-              disabled={wrong.includes(n)}
+              disabled={failed !== null}
             >
-              <span className={`count-num ${shake === n ? 'shake' : ''} ${hint && !solved && n === round.count ? 'hint' : ''}`}>
+              <span className={`count-num ${hint && !solved && failed === null && n === round.count ? 'hint' : ''}`}>
                 {n}
               </span>
             </button>

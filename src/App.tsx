@@ -45,6 +45,7 @@ export default function App() {
   const [levelIndex, setLevelIndex] = useState(0)
   const [round, setRound] = useState<Round | null>(null)
   const [found, setFound] = useState<number[]>([])
+  const [countFailedAt, setCountFailedAt] = useState(1) // level reached when Counting ended
   const [failedId, setFailedId] = useState<number | null>(null) // the wrong option the child tapped
   const [celebrating, setCelebrating] = useState(false)
   const [hint, setHint] = useState(false)
@@ -412,6 +413,10 @@ export default function App() {
           key={runId}
           onHome={goHome}
           onFinished={() => setScreen('winner')}
+          onFailed={(level) => {
+            setCountFailedAt(level)
+            setScreen('failed')
+          }}
           soundButton={soundButton}
         />
       )}
@@ -432,7 +437,8 @@ export default function App() {
             <SadFace />
           </div>
           <h2>Oops!</h2>
-          <p className="muted">That one was different. You got to level {levelIndex + 1}.</p>
+          <p className="muted">{activeGame === 'count' ? 'That was not the right number.' : 'That one was different.'} You got to level{' '}
+            {activeGame === 'count' ? countFailedAt : levelIndex + 1}.</p>
           <p className="muted">Go Home and try again from level 1.</p>
           <div className="winner-buttons">
             <div className="big-action">
