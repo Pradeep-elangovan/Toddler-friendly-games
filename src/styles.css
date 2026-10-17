@@ -25,6 +25,12 @@ body,
   height: 100%;
 }
 
+/* Chrome/Android pull-to-refresh is decided by the root scroller, so it must be set on <html> too */
+html,
+body {
+  overscroll-behavior: none;
+}
+
 body {
   margin: 0;
   font-family: var(--font);
