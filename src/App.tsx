@@ -13,6 +13,8 @@ import {
 } from './gameData'
 import { Icon } from './icons'
 import TileGame from './TileGame'
+import SortGame from './SortGame'
+import { SORT_LEVEL_COUNT } from './sortLogic'
 import {
   ColorGlyph,
   HoldButton,
@@ -26,8 +28,8 @@ import {
 } from './ui'
 import * as sound from './sound'
 
-type Screen = 'home' | 'game' | 'tiles' | 'winner' | 'failed'
-type GameId = 'pattern' | 'tiles'
+type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'winner' | 'failed'
+type GameId = 'pattern' | 'tiles' | 'sort'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
@@ -117,7 +119,14 @@ export default function App() {
     setScreen('tiles')
   }
 
-  const startGame = (game: GameId) => (game === 'tiles' ? startTiles() : beginLevel(0))
+  const startSort = () => {
+    clearTimers()
+    setActiveGame('sort')
+    setRunId((n) => n + 1)
+    setScreen('sort')
+  }
+
+  const startGame = (game: GameId) => (game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : beginLevel(0))
 
   const goHome = () => {
     clearTimers()
@@ -147,6 +156,8 @@ export default function App() {
       later(() => setWiggleCard(null), 600)
     } else if (id === 'tiles') {
       startTiles()
+    } else if (id === 'sort') {
+      startSort()
     } else {
       beginLevel(0)
     }
@@ -196,7 +207,8 @@ export default function App() {
     </button>
   )
 
-  const finishedLevels = activeGame === 'tiles' ? TILE_LEVEL_COUNT : LEVEL_COUNT
+  const finishedLevels =
+    activeGame === 'tiles' ? TILE_LEVEL_COUNT : activeGame === 'sort' ? SORT_LEVEL_COUNT : LEVEL_COUNT
 
   return (
     <div className="app-root">
@@ -355,6 +367,15 @@ export default function App() {
         />
       )}
 
+      {screen === 'sort' && (
+        <SortGame
+          key={runId}
+          onHome={goHome}
+          onFinished={() => setScreen('winner')}
+          soundButton={soundButton}
+        />
+      )}
+
       {screen === 'failed' && (
         <main className="winner failed-screen">
           <div className="winner-top">{soundButton}</div>
@@ -403,7 +424,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && screen !== 'tiles' && (
+      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>

@@ -51,6 +51,14 @@ export function playWrong() {
   tone(185, 0.12, 0.22, 'sine', 0.12)
 }
 
+/** "Blegh!": a bucket that can't digest the wrong fruit, then a little pop as it spits it out. Funny, not scary. */
+export function playYuck() {
+  tone(207.65, 0, 0.16, 'triangle', 0.12)
+  tone(174.61, 0.13, 0.2, 'triangle', 0.1)
+  tone(155.56, 0.26, 0.14, 'triangle', 0.08)
+  tone(740, 0.42, 0.09, 'sine', 0.12)
+}
+
 /** A soft, slow "aww" for a lost run: three gently falling notes (sad, but never scary). */
 export function playFail() {
   ;[392.0, 329.63, 261.63].forEach((f, i) => tone(f, i * 0.2, 0.42, 'sine', 0.16))

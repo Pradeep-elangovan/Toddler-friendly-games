@@ -270,6 +270,104 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
           <path d="M24 53 Q32 45 40 53" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
         </svg>
       )
+
+    /* ---- fruit for Fruit Sort (the apple above is shared); each has its own colour AND silhouette ---- */
+    case 'banana':
+      return (
+        <svg {...common}>
+          <path
+            d="M10 18 C8 40 24 58 52 52 C57 51 58 45 53 44 C34 44 26 32 28 14 C28 9 11 9 10 18Z"
+            fill="#fde047"
+            stroke="#ca8a04"
+            strokeWidth="3"
+            strokeLinejoin="round"
+          />
+          <path d="M14 20 C15 36 26 49 47 49" stroke="#fef9c3" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <rect x="12" y="4" width="14" height="9" rx="3" fill="#a16207" stroke="#78350f" strokeWidth="2" />
+          <circle cx="53.5" cy="48" r="3.6" fill="#78350f" />
+        </svg>
+      )
+    case 'orange':
+      return (
+        <svg {...common}>
+          <circle cx="32" cy="36" r="23" fill="#fb923c" stroke="#c2410c" strokeWidth="3" />
+          <path d="M32 13 C32 9 34 7 38 6" stroke="#78350f" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <ellipse cx="43" cy="11" rx="9" ry="4.5" transform="rotate(-20 43 11)" fill="#4ade80" stroke="#16a34a" strokeWidth="2" />
+          <path d="M17 31 Q19 23 26 21" stroke="#fed7aa" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+          <g fill="#c2410c" opacity="0.55">
+            <circle cx="26" cy="44" r="1.4" />
+            <circle cx="37" cy="40" r="1.4" />
+            <circle cx="44" cy="48" r="1.4" />
+            <circle cx="33" cy="51" r="1.4" />
+            <circle cx="44" cy="34" r="1.4" />
+          </g>
+        </svg>
+      )
+    case 'grapes':
+      return (
+        <svg {...common}>
+          <path d="M32 19 C32 13 34 10 38 8" stroke="#78350f" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path d="M35 11 C41 4 51 6 53 12 C47 15 39 15 35 11Z" fill="#4ade80" stroke="#16a34a" strokeWidth="2" strokeLinejoin="round" />
+          <g fill="#a855f7" stroke="#6b21a8" strokeWidth="2.5">
+            <circle cx="19" cy="27" r="9" />
+            <circle cx="32" cy="27" r="9" />
+            <circle cx="45" cy="27" r="9" />
+            <circle cx="25.5" cy="39" r="9" />
+            <circle cx="38.5" cy="39" r="9" />
+            <circle cx="32" cy="51" r="9" />
+          </g>
+          <g fill="#ffffff" opacity="0.7">
+            <circle cx="16" cy="24" r="2.2" />
+            <circle cx="29" cy="24" r="2.2" />
+            <circle cx="42" cy="24" r="2.2" />
+            <circle cx="22.5" cy="36" r="2.2" />
+            <circle cx="35.5" cy="36" r="2.2" />
+            <circle cx="29" cy="48" r="2.2" />
+          </g>
+        </svg>
+      )
+    case 'strawberry':
+      return (
+        <svg {...common}>
+          <path
+            d="M32 58 C14 46 8 30 12 24 C16 18 26 20 32 22 C38 20 48 18 52 24 C56 30 50 46 32 58Z"
+            fill="#f43f5e"
+            stroke="#be123c"
+            strokeWidth="3"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M17 22 L23 12 L28 19 L32 8 L36 19 L41 12 L47 22 C41 27 23 27 17 22Z"
+            fill="#22c55e"
+            stroke="#15803d"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+          />
+          <g fill="#fde68a">
+            <ellipse cx="21" cy="33" rx="1.7" ry="2.5" />
+            <ellipse cx="32" cy="34" rx="1.7" ry="2.5" />
+            <ellipse cx="43" cy="33" rx="1.7" ry="2.5" />
+            <ellipse cx="26" cy="42" rx="1.7" ry="2.5" />
+            <ellipse cx="38" cy="42" rx="1.7" ry="2.5" />
+            <ellipse cx="32" cy="50" rx="1.7" ry="2.5" />
+          </g>
+        </svg>
+      )
+    case 'watermelon':
+      return (
+        <svg {...common}>
+          <path d="M3 16 A29 29 0 0 0 61 16Z" fill="#16a34a" stroke="#166534" strokeWidth="3" strokeLinejoin="round" />
+          <path d="M8 16 A24 24 0 0 0 56 16Z" fill="#dcfce7" />
+          <path d="M11 16 A21 21 0 0 0 53 16Z" fill="#ef4444" />
+          <g fill="#1f2937">
+            <ellipse cx="22" cy="24" rx="1.8" ry="3" transform="rotate(-20 22 24)" />
+            <ellipse cx="32" cy="27" rx="1.8" ry="3" />
+            <ellipse cx="42" cy="24" rx="1.8" ry="3" transform="rotate(20 42 24)" />
+            <ellipse cx="27" cy="34" rx="1.8" ry="3" transform="rotate(-12 27 34)" />
+            <ellipse cx="37" cy="34" rx="1.8" ry="3" transform="rotate(12 37 34)" />
+          </g>
+        </svg>
+      )
   }
 }
 

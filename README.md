@@ -1,10 +1,10 @@
 # Toddler Friendly Games
 
-Offline-first React + Vite + TypeScript app with two playable games: **Pattern Match** and **Tile Match**.
+Offline-first React + Vite + TypeScript app with three playable games: **Pattern Match**, **Tile Match** and **Fruit Sort**.
 
 ## Home screen
 
-- Two big cards start the games. "Sound Match" is a placeholder for a future game.
+- Three big cards start the games.
 - Top left: a **colour / black-and-white** switch. Black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
 - Top right: a **sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
@@ -38,6 +38,20 @@ A mahjong-style board of icon tiles. Tap one tile, then another tile with the **
 | 5     | 6 x 6 | 36    | 18              | The biggest board; almost every icon in the game, including the look-alike faces (smile, sleepy, surprised, wink, cool, laughing, crying) and both stars, each exactly twice |
 
 A wrong pair just wobbles and both tiles go back, so there is no penalty. To change the board size or the icon pools, edit `tileLevels` in `src/gameData.ts` (an odd `size` automatically leaves the centre cell empty).
+
+## Fruit Sort
+
+Drag and drop fruit into the matching bucket. Fruit start jumbled on a table; each bucket shows the fruit it takes.
+
+| Level | Fruit | Buckets |
+| --- | --- | --- |
+| 1 | 6 | 2 |
+| 2 | 12 | 3 |
+| 3 | 18 | 3 |
+| 4 | 24 | 4 |
+| 5 | 30 | 5 |
+
+Only the number of fruit and buckets grows. A fruit can be dropped into the wrong bucket, but the bucket can't digest it: it shakes, makes a yucky sound, puffs, and throws the fruit out in a random direction onto the table, never into its pile. A fruit dropped on nothing slides back. After 8 idle seconds a fruit and its bucket gently hint.
 
 ## Toddler-friendly details
 
@@ -74,4 +88,5 @@ A wrong pair just wobbles and both tiles go back, so there is no penalty. To cha
 - `src/sound.ts`: sound effects
 - `src/App.tsx`: home, Pattern Match, finish screen, and the colour / sound switches
 - `src/TileGame.tsx`: the Tile Match game
+- `src/SortGame.tsx`, `src/sortLogic.ts`, `src/bucketArt.tsx`: the Fruit Sort game, its pure logic (levels, layout, throw) and the bucket art
 - `src/styles.css`: styling and animations

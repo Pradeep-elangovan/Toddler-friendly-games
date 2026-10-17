@@ -595,6 +595,321 @@ button:focus-visible {
   transform: translateY(3px) scale(0.97);
 }
 
+/* ---------- Fruit Sort (game 3): drag fruit into buckets ---------- */
+
+.sort-game {
+  gap: 10px;
+}
+
+.sort-progress {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(45, 58, 79, 0.12);
+  overflow: hidden;
+  width: min(100%, 320px);
+  margin: 0 auto;
+}
+
+.sort-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ffb703, #ff6b8b);
+  transition: width 0.35s ease;
+}
+
+.sort-board {
+  position: relative;
+  flex: 1;
+  min-height: 340px;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+/* the table where the jumbled fruit lies */
+.pile-zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 3px dashed rgba(45, 58, 79, 0.14);
+}
+
+.buckets {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.bucket {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--bw);
+  aspect-ratio: 100 / 118;
+  animation: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.bucket-in {
+  position: absolute;
+  inset: 0;
+}
+
+.bucket .bk {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.bk-back {
+  z-index: 0;
+}
+
+.bk-front {
+  z-index: 2;
+  filter: drop-shadow(0 4px 0 rgba(45, 58, 79, 0.14));
+}
+
+/* the fruit already sorted: sits in the opening, behind the front of the bucket, so it looks inside */
+.bucket .pile {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 52%;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: center;
+  align-content: flex-start;
+  pointer-events: none;
+}
+
+.bucket .mini {
+  width: 33.33%;
+  aspect-ratio: 1;
+  margin-bottom: -8%;
+  animation: mini-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.bucket-label {
+  position: absolute;
+  left: 50%;
+  top: 74%;
+  width: 46%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  padding: 7%;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 0 rgba(45, 58, 79, 0.18);
+  z-index: 3;
+}
+
+.bucket-in.happy {
+  animation: bucket-happy 0.45s ease;
+}
+
+.bucket-in.hint {
+  animation: bucket-hint 1s ease-in-out infinite;
+}
+
+/* a bucket that can't digest the wrong fruit: it shakes, goes a bit green, then burps it back out */
+.bucket-in.yuck {
+  animation: bucket-yuck 0.95s ease both;
+}
+
+.bucket-in.yuck .bk-front {
+  filter: sepia(0.5) hue-rotate(40deg) saturate(1.3) drop-shadow(0 4px 0 rgba(45, 58, 79, 0.14));
+}
+
+.bucket-in.burp {
+  animation: bucket-burp 0.4s ease both;
+}
+
+.puffs span {
+  position: absolute;
+  left: 50%;
+  top: 28%;
+  width: 18%;
+  aspect-ratio: 1;
+  margin-left: -9%;
+  border-radius: 50%;
+  background: #a3d977;
+  opacity: 0;
+  z-index: 4;
+  animation: puff 0.8s ease-out both;
+}
+
+.puffs span:nth-child(1) {
+  --px: -26px;
+  animation-delay: 0.22s;
+}
+
+.puffs span:nth-child(2) {
+  --px: 0px;
+  animation-delay: 0.3s;
+}
+
+.puffs span:nth-child(3) {
+  --px: 26px;
+  animation-delay: 0.38s;
+}
+
+/* a piece of fruit: placed by left/top (set in code), grabbed and dragged with a finger or mouse */
+.fruit {
+  position: absolute;
+  z-index: 5;
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  filter: drop-shadow(0 4px 3px rgba(45, 58, 79, 0.2));
+}
+
+.fruit-pop,
+.fruit-wiggle {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.fruit-pop {
+  animation: fruit-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms) backwards;
+}
+
+.fruit.dragging {
+  z-index: 30;
+  cursor: grabbing;
+  filter: drop-shadow(0 12px 8px rgba(45, 58, 79, 0.28));
+}
+
+.fruit.flying {
+  z-index: 40;
+  pointer-events: none;
+}
+
+.fruit.hint .fruit-wiggle {
+  animation: fruit-hint 0.9s ease-in-out infinite;
+}
+
+@keyframes fruit-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fruit-hint {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(-9deg) scale(1.12);
+  }
+  75% {
+    transform: rotate(9deg) scale(1.12);
+  }
+}
+
+@keyframes mini-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bucket-happy {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.1, 0.94);
+  }
+  70% {
+    transform: scale(0.96, 1.06);
+  }
+}
+
+@keyframes bucket-hint {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes bucket-yuck {
+  0% {
+    transform: none;
+  }
+  12% {
+    transform: rotate(-9deg) scale(1.06, 0.92);
+  }
+  26% {
+    transform: rotate(9deg) scale(0.94, 1.08);
+  }
+  40% {
+    transform: rotate(-7deg) scale(1.04, 0.95);
+  }
+  54% {
+    transform: rotate(7deg) scale(0.97, 1.05);
+  }
+  70% {
+    transform: rotate(-3deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes bucket-burp {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.88, 1.2);
+  }
+  70% {
+    transform: scale(1.08, 0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes puff {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+  25% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--px, 0px), -46px) scale(1.6);
+  }
+}
+
 /* ---------- "Oops" screen (Pattern Match, after a wrong tap) ---------- */
 
 .sad-wrap {

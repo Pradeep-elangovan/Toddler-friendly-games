@@ -15,7 +15,12 @@ export const iconNames = [
 /** Extra icons that look very alike (same yellow body, small differences): used only by Tile Match levels 3 to 5. */
 export const lookAlikeNames = ['smile', 'sleepy', 'wow', 'wink', 'star6', 'cool', 'laugh', 'cry'] as const
 
-export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number]
+/** The fruit used by Fruit Sort (game 3). 'apple' is shared with the main icon set; the rest are only used there. */
+export const fruitNames = ['apple', 'banana', 'orange', 'grapes', 'strawberry', 'watermelon'] as const
+
+export type FruitName = (typeof fruitNames)[number]
+
+export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number] | FruitName
 
 export const LEVEL_COUNT = 10
 
@@ -183,10 +188,10 @@ export const cards = [
     color: '#a0e7e5',
   },
   {
-    id: 'sounds',
-    label: 'Sound Match',
-    icons: ['moon', 'rocket', 'book'] as IconName[],
-    playable: false,
+    id: 'sort',
+    label: 'Fruit Sort',
+    icons: ['apple', 'banana', 'grapes'] as IconName[],
+    playable: true,
     color: '#cdb4f6',
   },
 ]
