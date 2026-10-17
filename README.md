@@ -1,10 +1,10 @@
 # Toddler Friendly Games
 
-Offline-first React + Vite + TypeScript app with three playable games: **Pattern Match**, **Tile Match** and **Fruit Sort**.
+Offline-first React + Vite + TypeScript app with four playable games: **Pattern Match**, **Tile Match**, **Fruit Sort** and **Counting**.
 
 ## Home screen
 
-- Three big cards start the games.
+- Four big cards start the games.
 - Top left: a **colour / black-and-white** switch. Black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
 - Top right: a **sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
@@ -53,6 +53,10 @@ Drag and drop fruit into the matching bucket. Fruit start jumbled on a table; ea
 
 Only the number of fruit and buckets grows. A fruit can be dropped into the wrong bucket, but the bucket can't digest it: it shakes, makes a yucky sound, puffs, and throws the fruit out in a random direction onto the table, never into its pile. A fruit dropped on nothing slides back. After 8 idle seconds a fruit and its bucket gently hint.
 
+## Counting
+
+Level N (1 to 9) shows N of the same item in a tidy grid and asks "How many?". Pick the right number out of three (always between 1 and 9). Nothing else changes between levels. A wrong pick wobbles and fades so the child can try again; after 9 idle seconds the right number pulses. Tapping an item makes it bounce.
+
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.
@@ -88,5 +92,6 @@ Only the number of fruit and buckets grows. A fruit can be dropped into the wron
 - `src/sound.ts`: sound effects
 - `src/App.tsx`: home, Pattern Match, finish screen, and the colour / sound switches
 - `src/TileGame.tsx`: the Tile Match game
+- `src/CountGame.tsx`, `src/countLogic.ts`: the Counting game and its levels
 - `src/SortGame.tsx`, `src/sortLogic.ts`, `src/bucketArt.tsx`: the Fruit Sort game, its pure logic (levels, layout, throw) and the bucket art
 - `src/styles.css`: styling and animations

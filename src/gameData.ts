@@ -194,4 +194,11 @@ export const cards = [
     playable: true,
     color: '#cdb4f6',
   },
+  {
+    id: 'count',
+    label: 'Counting',
+    icons: ['star', 'heart', 'moon'] as IconName[],
+    playable: true,
+    color: '#ffb4a2',
+  },
 ]
