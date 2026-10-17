@@ -201,4 +201,11 @@ export const cards = [
     playable: true,
     color: '#ffb4a2',
   },
+  {
+    id: 'memory',
+    label: 'Memory Match',
+    icons: ['rainbow', 'rocket', 'iceCream'] as IconName[],
+    playable: true,
+    color: '#b8e0a0',
+  },
 ]

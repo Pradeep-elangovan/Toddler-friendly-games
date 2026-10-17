@@ -16,6 +16,8 @@ import TileGame from './TileGame'
 import SortGame from './SortGame'
 import CountGame from './CountGame'
 import { COUNT_LEVEL_COUNT } from './countLogic'
+import MemoryGame from './MemoryGame'
+import { MEMORY_LEVEL_COUNT } from './memoryLogic'
 import { SORT_LEVEL_COUNT } from './sortLogic'
 import {
   ColorGlyph,
@@ -30,8 +32,8 @@ import {
 } from './ui'
 import * as sound from './sound'
 
-type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'winner' | 'failed'
-type GameId = 'pattern' | 'tiles' | 'sort' | 'count'
+type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'winner' | 'failed'
+type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
@@ -135,8 +137,15 @@ export default function App() {
     setScreen('count')
   }
 
+  const startMemory = () => {
+    clearTimers()
+    setActiveGame('memory')
+    setRunId((n) => n + 1)
+    setScreen('memory')
+  }
+
   const startGame = (game: GameId) =>
-    game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
+    game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
 
   const goHome = () => {
     clearTimers()
@@ -170,6 +179,8 @@ export default function App() {
       startSort()
     } else if (id === 'count') {
       startCount()
+    } else if (id === 'memory') {
+      startMemory()
     } else {
       beginLevel(0)
     }
@@ -226,7 +237,9 @@ export default function App() {
         ? SORT_LEVEL_COUNT
         : activeGame === 'count'
           ? COUNT_LEVEL_COUNT
-          : LEVEL_COUNT
+          : activeGame === 'memory'
+            ? MEMORY_LEVEL_COUNT
+            : LEVEL_COUNT
 
   return (
     <div className="app-root">
@@ -403,6 +416,15 @@ export default function App() {
         />
       )}
 
+      {screen === 'memory' && (
+        <MemoryGame
+          key={runId}
+          onHome={goHome}
+          onFinished={() => setScreen('winner')}
+          soundButton={soundButton}
+        />
+      )}
+
       {screen === 'failed' && (
         <main className="winner failed-screen">
           <div className="winner-top">{soundButton}</div>
@@ -451,7 +473,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && (
+      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>

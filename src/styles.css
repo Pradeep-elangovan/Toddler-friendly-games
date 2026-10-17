@@ -1298,3 +1298,117 @@ html.bw {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Memory Match ---------- */
+
+.memory-game {
+  gap: 10px;
+}
+
+.memory-board {
+  --gap: 10px;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  gap: var(--gap);
+  align-content: center;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+.mcard {
+  aspect-ratio: 5 / 6;
+  padding: 0;
+  border: 0;
+  background: none;
+  perspective: 600px;
+  position: relative;
+  min-height: 0;
+}
+
+/* nested wrappers so entry, shake and flip never restart each other's animation */
+.mcard-pop,
+.mcard-wiggle,
+.mcard-flip {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mcard-pop {
+  animation: pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) var(--d, 0ms) backwards;
+}
+
+.mcard-flip {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+}
+
+.mcard.open .mcard-flip {
+  transform: rotateY(180deg);
+}
+
+.mcard-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 6px 0 rgba(45, 58, 79, 0.16);
+}
+
+.mcard-back {
+  background: linear-gradient(160deg, #8ecbff, #5aa9ff);
+  border: 3px solid #fff;
+  border-bottom: 9px solid #3b82d6;
+}
+
+.mcard-mark {
+  width: 46%;
+  height: auto;
+}
+
+.mcard-front {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, #fffef8, #f6f0dc);
+  border: 3px solid #fff;
+  border-bottom: 9px solid #2fa36b;
+}
+
+.mcard-front .icon {
+  width: 70%;
+  height: auto;
+}
+
+.mcard:active:not(.open) .mcard-flip {
+  transform: translateY(3px);
+}
+
+.mcard.shake .mcard-wiggle {
+  animation: shake 0.45s ease;
+}
+
+.mcard.matching .mcard-wiggle {
+  animation: tile-away 0.4s ease-in forwards;
+}
+
+.mcard.matching .mcard-front {
+  background: linear-gradient(135deg, #b9f6d4, #7ee8ae);
+  border-bottom-color: var(--success-dark);
+}
+
+.mcard.gone {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mcard-flip {
+    transition: none;
+  }
+}

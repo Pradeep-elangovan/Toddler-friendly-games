@@ -1,10 +1,10 @@
 # Toddler Friendly Games
 
-Offline-first React + Vite + TypeScript app with four playable games: **Pattern Match**, **Tile Match**, **Fruit Sort** and **Counting**.
+Offline-first React + Vite + TypeScript app with five playable games: **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting** and **Memory Match**.
 
 ## Home screen
 
-- Four big cards start the games.
+- Five big cards start the games.
 - Top left: a **colour / black-and-white** switch. Black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
 - Top right: a **sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
@@ -57,6 +57,18 @@ Only the number of fruit and buckets grows. A fruit can be dropped into the wron
 
 Level N (1 to 9) shows N of the same item in a tidy grid and asks "How many?". Pick the right number out of three (always between 1 and 9). Nothing else changes between levels. A wrong pick wobbles and fades so the child can try again; after 9 idle seconds the right number pulses. Tapping an item makes it bounce.
 
+## Memory Match
+
+Like Tile Match, but every card starts face down. Flip one card, then a second (never more than two are open). Two the same disappear; two different flip back after a moment so the child can try to remember where they were. Mistakes never end the run.
+
+| Level | Cards | Pairs |
+| --- | --- | --- |
+| 1 | 6 | 3 |
+| 2 | 8 | 4 |
+| 3 | 12 | 6 |
+| 4 | 16 | 8 |
+| 5 | 20 | 10 |
+
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.
@@ -92,6 +104,7 @@ Level N (1 to 9) shows N of the same item in a tidy grid and asks "How many?". P
 - `src/sound.ts`: sound effects
 - `src/App.tsx`: home, Pattern Match, finish screen, and the colour / sound switches
 - `src/TileGame.tsx`: the Tile Match game
+- `src/MemoryGame.tsx`, `src/memoryLogic.ts`: the Memory Match game and its levels
 - `src/CountGame.tsx`, `src/countLogic.ts`: the Counting game and its levels
 - `src/SortGame.tsx`, `src/sortLogic.ts`, `src/bucketArt.tsx`: the Fruit Sort game, its pure logic (levels, layout, throw) and the bucket art
 - `src/styles.css`: styling and animations
