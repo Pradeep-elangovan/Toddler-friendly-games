@@ -45,7 +45,7 @@ export function SadFace() {
   return (
     <svg viewBox="0 0 64 64" className="icon" aria-hidden focusable="false">
       <circle cx="32" cy="32" r="27" fill="#fde047" stroke="#f59e0b" strokeWidth="3" />
-      <path d="M16 22 L27 26 M48 22 L37 26" stroke="#7c4a1e" strokeWidth="3" strokeLinecap="round" />
+      <path d="M15 27 L27 21 M49 27 L37 21" stroke="#7c4a1e" strokeWidth="3" strokeLinecap="round" />
       <circle cx="23" cy="33" r="3.4" fill="#7c4a1e" />
       <circle cx="41" cy="33" r="3.4" fill="#7c4a1e" />
       <path d="M21 48 Q32 38 43 48" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />

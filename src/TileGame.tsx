@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
-import { TILE_LEVEL_COUNT, makeTiles, tileLevels, type Tile } from './gameData'
+import { TILE_LEVEL_COUNT, makeTiles, pairsForLevel, tileLevels, type Tile } from './gameData'
 import { Icon } from './icons'
 import { HoldButton, HomeGlyph, iconLabel } from './ui'
 import * as sound from './sound'
@@ -48,7 +48,7 @@ export default function TileGame({ onHome, onFinished, soundButton }: Props) {
   }, [tiles, selected, celebrating])
 
   const cfg = tileLevels[levelIndex]
-  const totalPairs = (cfg.size * cfg.size) / 2
+  const totalPairs = pairsForLevel(levelIndex + 1)
   const liveCount = tiles.filter((t) => !t.gone).length
   const pairsDone = totalPairs - liveCount / 2
 
@@ -148,7 +148,7 @@ export default function TileGame({ onHome, onFinished, soundButton }: Props) {
         {soundButton}
       </header>
 
-      <div className="ref-stars pairs" aria-hidden>
+      <div className={`ref-stars pairs ${totalPairs > 12 ? 'many' : ''}`} aria-hidden>
         {Array.from({ length: totalPairs }, (_, i) => (
           <span key={i} className={i < pairsDone ? 'on' : ''}>
             ★
@@ -160,7 +160,7 @@ export default function TileGame({ onHome, onFinished, soundButton }: Props) {
       </p>
 
       <section
-        className="board"
+        className={`board size-${cfg.size}`}
         style={{ '--n': cfg.size } as React.CSSProperties}
         aria-label="Tap two tiles that match"
         key={`board-${levelIndex}`}
@@ -180,7 +180,7 @@ export default function TileGame({ onHome, onFinished, soundButton }: Props) {
             <button
               key={t.id}
               className={cls}
-              style={{ '--d': `${i * 30}ms` } as React.CSSProperties}
+              style={{ '--d': `${Math.min(i * 30, 600)}ms` } as React.CSSProperties}
               onClick={() => onTileTap(t)}
               aria-pressed={selected === t.id}
               aria-label={`${iconLabel(t.icon)} tile${selected === t.id ? ', selected' : ''}`}

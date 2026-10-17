@@ -235,6 +235,41 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
           <path d="M27 38 Q32 43 37 38" stroke="#7c4a1e" strokeWidth="2.4" fill="none" strokeLinecap="round" />
         </svg>
       )
+
+    /* ---- more look-alikes (Tile Match level 5) ---- */
+    case 'cool':
+      return (
+        <svg {...common}>
+          <FaceDisc />
+          <rect x="13" y="23" width="17" height="12" rx="5" fill="#1f2937" />
+          <rect x="34" y="23" width="17" height="12" rx="5" fill="#1f2937" />
+          <path d="M30 27 H34" stroke="#1f2937" strokeWidth="3" strokeLinecap="round" />
+          <path d="M16 27 H20 M37 27 H41" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" />
+          <path d="M22 43 Q32 51 42 43" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+        </svg>
+      )
+    case 'laugh':
+      return (
+        <svg {...common}>
+          <FaceDisc />
+          <path d="M15 31 Q22 22 29 31" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          <path d="M35 31 Q42 22 49 31" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+          <path d="M17 38 H47 Q47 55 32 55 Q17 55 17 38Z" fill="#7c4a1e" strokeLinejoin="round" />
+          <path d="M25 52 Q32 45 39 52Z" fill="#fb7185" />
+        </svg>
+      )
+    case 'cry':
+      return (
+        <svg {...common}>
+          <FaceDisc />
+          <path d="M16 28 L27 23 M48 28 L37 23" stroke="#7c4a1e" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="23" cy="32" r="3.2" fill="#7c4a1e" />
+          <circle cx="41" cy="32" r="3.2" fill="#7c4a1e" />
+          <path d="M22 37 Q17 45 22 49 Q27 45 22 37Z" fill="#60a5fa" stroke="#2563eb" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M42 37 Q37 45 42 49 Q47 45 42 37Z" fill="#60a5fa" stroke="#2563eb" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M24 53 Q32 45 40 53" stroke="#7c4a1e" strokeWidth="3.2" fill="none" strokeLinecap="round" />
+        </svg>
+      )
   }
 }
 

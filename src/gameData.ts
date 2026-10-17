@@ -12,8 +12,8 @@ export const iconNames = [
   'book',
 ] as const
 
-/** Extra icons that look very alike: used only by Tile Match level 3. */
-export const lookAlikeNames = ['smile', 'sleepy', 'wow', 'wink', 'star6'] as const
+/** Extra icons that look very alike (same yellow body, small differences): used only by Tile Match levels 3 to 5. */
+export const lookAlikeNames = ['smile', 'sleepy', 'wow', 'wink', 'star6', 'cool', 'laugh', 'cry'] as const
 
 export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number]
 
@@ -83,11 +83,11 @@ export function columnsFor(optionCount: number): number {
 
 /* ---------------- Tile Match (game 2) ---------------- */
 
-export const TILE_LEVEL_COUNT = 3
+export const TILE_LEVEL_COUNT = 5
 
 export type TileLevel = {
   level: number
-  /** the board is size x size tiles (size * size must be even) */
+  /** the board is size x size tiles; with an odd size the centre cell is left empty so the rest still pair up */
   size: number
   /** icons this level may draw from */
   pool: readonly IconName[]
@@ -96,15 +96,41 @@ export type TileLevel = {
 }
 
 /**
- * Same board size every level (big tiles for little fingers); the difficulty is in telling the icons apart:
- *  1. only 4 very different icons, so there are lots of easy matches
- *  2. 8 different icons to look through
- *  3. look-alikes: four faces and two stars that differ only in small details
+ * Levels 1 to 3 use the same 4 x 4 board (big tiles for little fingers); the difficulty is in telling the icons apart.
+ * Levels 4 and 5 then add more tiles as well:
+ *  1. only 4 very different icons, so there are lots of easy matches        (16 tiles)
+ *  2. 8 different icons to look through                                     (16 tiles)
+ *  3. look-alikes: four faces and two stars that differ only in small details (16 tiles)
+ *  4. a bigger board mixing look-alikes with ordinary icons, 12 different icons (24 tiles, centre left empty)
+ *  5. the biggest board: 18 different icons picked from all 19, so nearly every icon in the game
+ *     appears, look-alike faces and stars included, each exactly twice (36 tiles)
  */
 export const tileLevels: TileLevel[] = [
   { level: 1, size: 4, pool: ['star', 'heart', 'cloud', 'rocket', 'book', 'pencil'], distinct: 4 },
   { level: 2, size: 4, pool: iconNames, distinct: 8 },
   { level: 3, size: 4, pool: ['smile', 'sleepy', 'wow', 'wink', 'star', 'star6'], distinct: 6 },
+  {
+    level: 4,
+    size: 5,
+    pool: [
+      'smile',
+      'sleepy',
+      'wow',
+      'wink',
+      'star',
+      'star6',
+      'heart',
+      'apple',
+      'moon',
+      'cloud',
+      'rocket',
+      'flower',
+      'rainbow',
+      'iceCream',
+    ],
+    distinct: 12,
+  },
+  { level: 5, size: 6, pool: [...iconNames, ...lookAlikeNames], distinct: 18 },
 ]
 
 export type Tile = {
@@ -114,17 +140,31 @@ export type Tile = {
   gone: boolean
 }
 
-/** Builds a shuffled board for a level (1..TILE_LEVEL_COUNT). Every icon appears an even number of times. */
+/** How many matching pairs a level has (an odd-sized board leaves its centre cell empty). */
+export function pairsForLevel(level: number): number {
+  const { size } = tileLevels[level - 1]
+  return Math.floor((size * size) / 2)
+}
+
+/**
+ * Builds a shuffled board for a level (1..TILE_LEVEL_COUNT). Every icon appears an even number of times.
+ * On an odd-sized board the centre cell is an already-cleared (invisible) tile, so there is a gap in the middle.
+ */
 export function makeTiles(level: number, random: () => number = Math.random): Tile[] {
   const cfg = tileLevels[level - 1]
-  const pairCount = (cfg.size * cfg.size) / 2
+  const cells = cfg.size * cfg.size
+  const pairCount = pairsForLevel(level)
   const chosen = shuffle(cfg.pool, random).slice(0, cfg.distinct)
   const pairIcons = Array.from({ length: pairCount }, (_, i) => chosen[i % chosen.length])
   const icons = shuffle(
     pairIcons.flatMap((icon) => [icon, icon]),
     random,
   )
-  return icons.map((icon, id) => ({ id, icon, gone: false }))
+  const blankAt = cells % 2 === 1 ? (cells - 1) / 2 : -1
+  let next = 0
+  return Array.from({ length: cells }, (_, id): Tile =>
+    id === blankAt ? { id, icon: chosen[0], gone: true } : { id, icon: icons[next++], gone: false },
+  )
 }
 
 export const cards = [

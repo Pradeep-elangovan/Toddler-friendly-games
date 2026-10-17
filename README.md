@@ -27,13 +27,17 @@ The child taps every option that matches the reference. The reference icon is ra
 
 ## Tile Match
 
-A mahjong-style board of icon tiles (4 x 4). Tap one tile, then another tile with the **same icon**, and both disappear. Clear the whole board to finish the level. There are 3 levels; the board stays the same size, but the icons get harder to tell apart:
+A mahjong-style board of icon tiles. Tap one tile, then another tile with the **same icon**, and both disappear. Clear the whole board to finish the level. There are 5 levels. The first three keep the same 4 x 4 board and get harder only because the icons are harder to tell apart; levels 4 and 5 then add more tiles as well:
 
-1. **Easy:** only 4 very different icons, so there are lots of matches to find.
-2. **Medium:** 8 different icons to look through.
-3. **Hard:** look-alikes: four yellow faces (smile, sleepy, surprised, wink) and two faces-in-stars that differ only in small details.
+| Level | Board | Tiles | Different icons | What makes it harder |
+| ----- | ----- | ----- | --------------- | -------------------- |
+| 1     | 4 x 4 | 16    | 4               | Only very different icons, lots of repeats |
+| 2     | 4 x 4 | 16    | 8               | More icons to look through |
+| 3     | 4 x 4 | 16    | 6               | Look-alikes: four yellow faces and two faces-in-stars that differ only in small details |
+| 4     | 5 x 5 | 24    | 12              | Bigger board (the centre cell is left empty so the tiles still pair up); look-alikes mixed with ordinary icons, each icon only twice |
+| 5     | 6 x 6 | 36    | 18              | The biggest board; almost every icon in the game, including the look-alike faces (smile, sleepy, surprised, wink, cool, laughing, crying) and both stars, each exactly twice |
 
-A wrong pair just wobbles and both tiles go back, so there is no penalty. To change the board size or the icon pools, edit `tileLevels` in `src/gameData.ts`.
+A wrong pair just wobbles and both tiles go back, so there is no penalty. To change the board size or the icon pools, edit `tileLevels` in `src/gameData.ts` (an odd `size` automatically leaves the centre cell empty).
 
 ## Toddler-friendly details
 
@@ -65,7 +69,7 @@ A wrong pair just wobbles and both tiles go back, so there is no penalty. To cha
 ## Code map
 
 - `src/gameData.ts`: Pattern Match levels (`makeRound`), Tile Match levels (`tileLevels`, `makeTiles`), home cards
-- `src/icons.tsx`: the colourful SVG icons (11 main icons plus the look-alike faces/stars for Tile Match level 3)
+- `src/icons.tsx`: the colourful SVG icons (11 main icons plus the look-alike faces and star used by Tile Match levels 3 to 5)
 - `src/ui.tsx`: shared buttons and glyphs (hold-to-exit button, colour and sound icons) and the saved on/off settings
 - `src/sound.ts`: sound effects
 - `src/App.tsx`: home, Pattern Match, finish screen, and the colour / sound switches

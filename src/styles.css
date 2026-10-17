@@ -727,6 +727,13 @@ html.bw {
   min-height: 24px;
 }
 
+/* with many pairs the stars get smaller so they stay on one or two short lines */
+.ref-stars.pairs.many {
+  font-size: 14px;
+  max-width: 340px;
+  margin: 0 auto;
+}
+
 .board {
   --gap: 10px;
   flex: 1;
@@ -737,6 +744,36 @@ html.bw {
   width: 100%;
   max-width: 420px;
   margin: 0 auto;
+}
+
+/* denser boards: tighter gaps and a thinner jade edge so the tiles stay as big as possible */
+.board.size-5 {
+  --gap: 8px;
+  max-width: 440px;
+}
+
+.board.size-6 {
+  --gap: 6px;
+  max-width: 460px;
+}
+
+.board.size-5 .tile,
+.board.size-6 .tile {
+  min-height: 44px;
+  border-radius: 12px;
+  border-bottom-width: 6px;
+  aspect-ratio: 1 / 1.08;
+}
+
+.board.size-6 .tile {
+  border-radius: 10px;
+  border-width: 2px;
+  border-bottom-width: 5px;
+}
+
+.board.size-5 .tile .icon,
+.board.size-6 .tile .icon {
+  width: 78%;
 }
 
 /* a chunky, mahjong-style tile: ivory face with a jade edge */
