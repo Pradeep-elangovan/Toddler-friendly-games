@@ -1607,7 +1607,7 @@ html.bw {
 }
 
 .clock-ref svg {
-  width: min(40vw, 22vh, 150px);
+  width: min(40vw, 19vh, 150px);
   height: auto;
   aspect-ratio: 1;
   filter: drop-shadow(0 5px 0 rgba(45, 58, 79, 0.12));
@@ -1620,7 +1620,7 @@ html.bw {
 }
 
 .clock-wrap.with-ref .clock-svg {
-  width: min(80vw, 300px, 34vh);
+  width: min(80vw, 300px, 31vh);
 }
 
 .clock-svg.nudge {
