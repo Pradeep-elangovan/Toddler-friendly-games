@@ -1525,7 +1525,7 @@ html.bw {
 }
 
 .clock-svg {
-  width: min(86vw, 340px, 100%);
+  width: min(86vw, 340px, 42vh);
   max-height: 100%;
   aspect-ratio: 1;
   filter: drop-shadow(0 8px 0 rgba(45, 58, 79, 0.12));
