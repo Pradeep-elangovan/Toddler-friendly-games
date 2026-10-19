@@ -34,6 +34,8 @@ export type ClockRound = {
   answer: { hour: number; minute: number }
   /** every number that counts as correct for each hand (only level 7 has more than one, when the short hand is half way) */
   accept: { hour: number[]; minute: number[] }
+  /** the three options shown for both questions of a read level */
+  options?: number[]
   /** where a real clock would show the time (level 7 only; kept for tests) */
   ref?: { hour: number; minute: number }
 }
@@ -126,21 +128,36 @@ export function makeClockRound(level: number, random: () => number = Math.random
     }
     // the two hands must be easy to tell apart (except in level 2, where they sit on the same number on purpose)
     if (lv !== 2 && dist(hour, minute) < 1) continue
-    return { mode: 'read', hour, minute, answer: { hour: ah, minute: am }, accept: { hour: [ah], minute: [am] } }
+    const r: ClockRound = { mode: 'read', hour, minute, answer: { hour: ah, minute: am }, accept: { hour: [ah], minute: [am] } }
+    r.options = makeLevelOptions(r, random)
+    return r
   }
 }
 
-/**
- * Three different numbers (1 to 12), one of them correct. When the hand sits between two numbers,
- * the other neighbour is always one of the wrong options, so the child really has to see which is closer.
- */
-export function makeOptions(pos: number, answer: number, random: () => number = Math.random): number[] {
-  const opts = new Set<number>([answer])
+/** The number next to `answer` on the far side of the hand, which the hand is NOT closest to. */
+function otherNeighbour(pos: number, answer: number): number | null {
   const rel = ((((pos % 12) + 12) % 12) - posOf(answer) + 12) % 12 // 0 on the number, else just past or just before
-  if (rel > 0.01 && rel < 11.99) {
-    const other = rel < 6 ? answer + 1 : answer - 1
-    opts.add(((((other - 1) % 12) + 12) % 12) + 1)
-  }
+  if (rel < 0.01 || rel > 11.99) return null
+  const other = rel < 6 ? answer + 1 : answer - 1
+  return ((((other - 1) % 12) + 12) % 12) + 1
+}
+
+/**
+ * The three options for a whole level (read levels). They stay the same for both questions: the child picks the
+ * short hand's number first and that option is used up, then picks the long hand's number from what is left.
+ * So the options are the two answers plus one more number. When a hand sits between two numbers, the extra number
+ * is that hand's other neighbour, so the child really has to see which one is closer.
+ * (Level 2 has the same answer for both hands, so it needs two extra numbers and the answer stays available.)
+ */
+export function makeLevelOptions(round: ClockRound, random: () => number = Math.random): number[] {
+  const opts = new Set<number>([round.answer.hour, round.answer.minute])
+  const neighbours = shuffle(
+    [otherNeighbour(round.hour, round.answer.hour), otherNeighbour(round.minute, round.answer.minute)].filter(
+      (n): n is number => n !== null,
+    ),
+    random,
+  )
+  for (const n of neighbours) if (opts.size < 3) opts.add(n)
   while (opts.size < 3) opts.add(whole(random))
   return shuffle([...opts], random)
 }

@@ -7,7 +7,6 @@ import {
   clockLevels,
   copyRound,
   makeClockRound,
-  makeOptions,
   nearestNumber,
   type ClockRound,
   type HandName,
@@ -124,6 +123,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
   const [round, setRound] = useState<ClockRound>(() => makeClockRound(1))
   const [step, setStep] = useState(0) // 0: the short hand, 1: the long hand
   const [state, setState] = useState<'idle' | 'right' | 'failed'>('idle')
+  const [usedPick, setUsedPick] = useState<number | null>(null) // the option chosen for the short hand
   const [failedPick, setFailedPick] = useState<number | null>(null)
   const [live, setLive] = useState(0) // where the hand being moved points (set levels)
   const [dragging, setDragging] = useState(false)
@@ -152,10 +152,9 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
   const target = round.answer[hand]
   const startPos = (n: number) => (n === 12 ? 6 : 12) // a set-level hand starts away from where it has to go
 
-  const options = React.useMemo(
-    () => (isSet ? [] : makeOptions(hand === 'hour' ? round.hour : round.minute, target)),
-    [round, step, isSet], // eslint-disable-line react-hooks/exhaustive-deps
-  )
+  // the same three options for both questions; the number picked for the short hand is used up
+  const options = round.options ?? []
+  const used = step === 1 && usedPick !== round.answer.minute ? usedPick : null
 
   // After a pause, gently pulse the right answer.
   useEffect(() => {
@@ -177,6 +176,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
     const r = makeClockRound(index + 1)
     setLevelIndex(index)
     setRound(r)
+    setUsedPick(null)
     setSetHour(0)
     setCelebrating(false)
     startStep(0, r)
@@ -221,8 +221,11 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
 
   const onPick = (n: number) => {
     if (state !== 'idle') return
-    if (acceptedNow().includes(n)) right()
-    else wrong(n)
+    if (n === used) return
+    if (acceptedNow().includes(n)) {
+      if (step === 0) setUsedPick(n)
+      right()
+    } else wrong(n)
   }
 
   // ----- moving a hand (levels 5 and 6): touch or drag anywhere on the clock face -----
@@ -341,12 +344,13 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
       {isSet ? (
         <p className="clock-tip">{isCopy ? 'Touch the clock, or drag the hand, to the number' : 'Touch the clock, or drag the hand, to the number'}</p>
       ) : (
-        <section className="count-options clock-options" aria-label="Pick the number" key={`opts-${levelIndex}-${step}`}>
+        <section className="count-options clock-options" aria-label="Pick the number" key={`opts-${levelIndex}`}>
           {options.map((n, i) => {
             const cls = [
               'count-option',
-              state === 'right' && n === target ? 'right' : '',
+              state === 'right' && n === target && n !== used ? 'right' : '',
               state === 'right' && n !== target ? 'faded' : '',
+              n === used ? 'used' : '',
               failedPick === n ? 'failed' : '',
               state === 'failed' && failedPick !== n ? 'faded' : '',
             ]
@@ -359,9 +363,9 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
                 style={{ '--c': NUMBER_COLORS[i % NUMBER_COLORS.length], '--d': `${i * 60}ms` } as React.CSSProperties}
                 onClick={() => onPick(n)}
                 aria-label={`${n}`}
-                disabled={state !== 'idle'}
+                disabled={state !== 'idle' || n === used}
               >
-                <span className={`count-num ${showHint && n === target ? 'hint' : ''}`}>{n}</span>
+                <span className={`count-num ${showHint && n === target && n !== used ? 'hint' : ''}`}>{n}</span>
               </button>
             )
           })}
