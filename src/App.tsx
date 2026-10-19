@@ -18,6 +18,8 @@ import CountGame from './CountGame'
 import { COUNT_LEVEL_COUNT } from './countLogic'
 import MemoryGame from './MemoryGame'
 import { MEMORY_LEVEL_COUNT } from './memoryLogic'
+import ClockGame from './ClockGame'
+import { CLOCK_LEVEL_COUNT } from './clockLogic'
 import { SORT_LEVEL_COUNT } from './sortLogic'
 import {
   ColorGlyph,
@@ -32,8 +34,8 @@ import {
 } from './ui'
 import * as sound from './sound'
 
-type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'winner' | 'failed'
-type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory'
+type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'winner' | 'failed'
+type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
@@ -45,7 +47,7 @@ export default function App() {
   const [levelIndex, setLevelIndex] = useState(0)
   const [round, setRound] = useState<Round | null>(null)
   const [found, setFound] = useState<number[]>([])
-  const [countFailedAt, setCountFailedAt] = useState(1) // level reached when Counting ended
+  const [failedAt, setFailedAt] = useState(1) // level reached when Counting or Clock Time ended
   const [failedId, setFailedId] = useState<number | null>(null) // the wrong option the child tapped
   const [celebrating, setCelebrating] = useState(false)
   const [hint, setHint] = useState(false)
@@ -145,8 +147,15 @@ export default function App() {
     setScreen('memory')
   }
 
+  const startClock = () => {
+    clearTimers()
+    setActiveGame('clock')
+    setRunId((n) => n + 1)
+    setScreen('clock')
+  }
+
   const startGame = (game: GameId) =>
-    game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
+    game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
 
   const goHome = () => {
     clearTimers()
@@ -182,6 +191,8 @@ export default function App() {
       startCount()
     } else if (id === 'memory') {
       startMemory()
+    } else if (id === 'clock') {
+      startClock()
     } else {
       beginLevel(0)
     }
@@ -240,7 +251,9 @@ export default function App() {
           ? COUNT_LEVEL_COUNT
           : activeGame === 'memory'
             ? MEMORY_LEVEL_COUNT
-            : LEVEL_COUNT
+            : activeGame === 'clock'
+              ? CLOCK_LEVEL_COUNT
+              : LEVEL_COUNT
 
   return (
     <div className="app-root">
@@ -414,7 +427,7 @@ export default function App() {
           onHome={goHome}
           onFinished={() => setScreen('winner')}
           onFailed={(level) => {
-            setCountFailedAt(level)
+            setFailedAt(level)
             setScreen('failed')
           }}
           soundButton={soundButton}
@@ -430,6 +443,19 @@ export default function App() {
         />
       )}
 
+      {screen === 'clock' && (
+        <ClockGame
+          key={runId}
+          onHome={goHome}
+          onFinished={() => setScreen('winner')}
+          onFailed={(level) => {
+            setFailedAt(level)
+            setScreen('failed')
+          }}
+          soundButton={soundButton}
+        />
+      )}
+
       {screen === 'failed' && (
         <main className="winner failed-screen">
           <div className="winner-top">{soundButton}</div>
@@ -437,8 +463,12 @@ export default function App() {
             <SadFace />
           </div>
           <h2>Oops!</h2>
-          <p className="muted">{activeGame === 'count' ? 'That was not the right number.' : 'That one was different.'} You got to level{' '}
-            {activeGame === 'count' ? countFailedAt : levelIndex + 1}.</p>
+          <p className="muted">{activeGame === 'count'
+              ? 'That was not the right number.'
+              : activeGame === 'clock'
+                ? 'That was not the right place.'
+                : 'That one was different.'} You got to level{' '}
+            {activeGame === 'count' || activeGame === 'clock' ? failedAt : levelIndex + 1}.</p>
           <p className="muted">Go Home and try again from level 1.</p>
           <div className="winner-buttons">
             <div className="big-action">
@@ -479,7 +509,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && (
+      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>

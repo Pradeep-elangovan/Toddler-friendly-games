@@ -20,7 +20,10 @@ export const fruitNames = ['apple', 'banana', 'orange', 'grapes', 'strawberry', 
 
 export type FruitName = (typeof fruitNames)[number]
 
-export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number] | FruitName
+/** Icons used only on the home screen cards. */
+export const cardOnlyNames = ['clock'] as const
+
+export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number] | FruitName | (typeof cardOnlyNames)[number]
 
 export const LEVEL_COUNT = 10
 
@@ -207,5 +210,12 @@ export const cards = [
     icons: ['rainbow', 'rocket', 'iceCream'] as IconName[],
     playable: true,
     color: '#b8e0a0',
+  },
+  {
+    id: 'clock',
+    label: 'Clock Time',
+    icons: ['clock', 'moon', 'star'] as IconName[],
+    playable: true,
+    color: '#ffd6a5',
   },
 ]

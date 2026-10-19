@@ -272,6 +272,18 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
       )
 
     /* ---- fruit for Fruit Sort (the apple above is shared); each has its own colour AND silhouette ---- */
+    case 'clock':
+      return (
+        <svg {...common}>
+          <circle cx="32" cy="32" r="26" fill="#fff" stroke="#ef476f" strokeWidth="5" />
+          <g stroke="#2d3a4f" strokeWidth="2.6" strokeLinecap="round">
+            <path d="M32 11v4M32 49v4M11 32h4M49 32h4" />
+          </g>
+          <path d="M32 32V20" stroke="#ef476f" strokeWidth="5" strokeLinecap="round" />
+          <path d="M32 32l11 6" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round" />
+          <circle cx="32" cy="32" r="3.4" fill="#2d3a4f" />
+        </svg>
+      )
     case 'banana':
       return (
         <svg {...common}>

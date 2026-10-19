@@ -1423,3 +1423,177 @@ html.bw {
     transition: none;
   }
 }
+
+/* ---------- Clock Time ---------- */
+
+.clock-game {
+  gap: 8px;
+}
+
+.clock-steps {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.clock-steps span {
+  width: 34px;
+  height: 8px;
+  border-radius: 6px;
+  background: #e0dac6;
+  transition: background 0.3s;
+}
+
+.clock-steps span.current {
+  background: #ffb703;
+}
+
+.clock-steps span.done {
+  background: var(--success-dark, #2fa36b);
+}
+
+.clock-ask {
+  margin: 2px 0 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.hand-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 12px 2px 10px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 22px;
+  vertical-align: middle;
+}
+
+.hand-chip i {
+  display: block;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.hand-chip.hour {
+  background: #ef476f;
+}
+
+.hand-chip.hour i {
+  width: 18px;
+  height: 10px;
+}
+
+.hand-chip.minute {
+  background: #3b82f6;
+}
+
+.hand-chip.minute i {
+  width: 34px;
+  height: 5px;
+}
+
+.target-num {
+  display: inline-grid;
+  place-items: center;
+  min-width: 46px;
+  height: 46px;
+  padding: 0 8px;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 30px;
+  vertical-align: middle;
+}
+
+.target-num.hour {
+  background: #ef476f;
+}
+
+.target-num.minute {
+  background: #3b82f6;
+}
+
+.clock-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+}
+
+.clock-svg {
+  width: min(86vw, 340px, 100%);
+  max-height: 100%;
+  aspect-ratio: 1;
+  filter: drop-shadow(0 8px 0 rgba(45, 58, 79, 0.12));
+  touch-action: none;
+  user-select: none;
+}
+
+.clock-svg.movable {
+  cursor: grab;
+}
+
+.clock-svg .hand {
+  transform-origin: 100px 100px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.3, 0.64, 1), opacity 0.3s;
+  pointer-events: none;
+}
+
+.clock-svg .hand.dragging {
+  transition: none;
+}
+
+.clock-svg .hand.other {
+  opacity: 0.32;
+}
+
+.clock-svg.failed .hand.asked {
+  filter: grayscale(1);
+}
+
+.num-hint text {
+  animation: num-pulse 0.9s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes num-pulse {
+  50% {
+    transform: scale(1.45);
+    fill: #ef476f;
+  }
+}
+
+.clock-check {
+  position: absolute;
+  right: 8%;
+  top: 6%;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--success-dark, #2fa36b);
+  color: #fff;
+  font-size: 34px;
+  font-weight: 900;
+  animation: pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.clock-tip {
+  margin: 0;
+  min-height: 84px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: var(--muted, #5b6b82);
+  font-weight: 700;
+}
+
+.clock-options .count-option {
+  min-height: 72px;
+}
