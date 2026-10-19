@@ -10,8 +10,6 @@ type Props = {
   onHome: () => void
   /** called after the last level is cleared */
   onFinished: () => void
-  /** called after a wrong pick, with the level the child reached */
-  onFailed: (level: number) => void
   soundButton: React.ReactNode
 }
 
@@ -21,14 +19,16 @@ const TILE_COLORS = ['#ffb4a2', '#ffd166', '#a0e7e5', '#cdb4f6', '#b8e0a0', '#bd
 /**
  * Missing Letter: letters in alphabet order with one hidden. Drag the missing letter, out of three, into the gap.
  * The right letter is hugged by its new neighbours. A wrong letter is squeezed out of the gap and flung away
- * (the neighbours squeeze together and push it out), and then the "Oops" screen follows: the run ends.
+ * (the neighbours squeeze together and push it out, it is flung away and drifts back to the options greyed out).
+ * Nothing ever fails: the child just tries a different letter in the same round.
  * Dropping a letter anywhere else just slides it back.
  */
-export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }: Props) {
+export default function SeriesGame({ onHome, onFinished, soundButton }: Props) {
   const [levelIndex, setLevelIndex] = useState(0)
   const [round, setRound] = useState<SeriesRound>(() => makeSeriesRound(1))
   const [solved, setSolved] = useState(false) // the right letter is in the gap
-  const [rejected, setRejected] = useState<string | null>(null) // the wrong letter that was squeezed out
+  const [rejected, setRejected] = useState<string | null>(null) // the wrong letter being squeezed out right now
+  const [tried, setTried] = useState<string[]>([]) // wrong letters already squeezed out (greyed out for this round)
   const [rowAnim, setRowAnim] = useState<'' | 'hug' | 'squeeze'>('')
   const [drag, setDrag] = useState<{ letter: string; pid: number; sx: number; sy: number; dx: number; dy: number } | null>(null)
   const [celebrating, setCelebrating] = useState(false) // the "Great job" card, shown after the hug
@@ -64,6 +64,7 @@ export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }
     setSolved(false)
     setCelebrating(false)
     setRejected(null)
+    setTried([])
     setRowAnim('')
     setDrag(null)
   }
@@ -133,25 +134,31 @@ export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }
         const out = el.animate(
           [
             { transform: at, opacity: 1, offset: 0 },
-            { transform: `${at} scale(0.62, 1.22)`, opacity: 1, offset: 0.34 },
-            { transform: `${at} scale(0.62, 1.22)`, opacity: 1, offset: 0.46 },
+            { transform: `${at} scale(0.62, 1.22)`, opacity: 1, offset: 0.24 },
+            { transform: `${at} scale(0.62, 1.22)`, opacity: 1, offset: 0.33 },
             {
               transform: `translate(${tx + Math.cos(angle) * dist}px, ${ty + Math.sin(angle) * dist}px) rotate(${spin}deg) scale(0.8)`,
-              opacity: 0.1,
-              offset: 1,
+              opacity: 0.9,
+              offset: 0.62,
             },
+            { transform: 'none', opacity: 1, offset: 1 }, // and it drifts back to the options
           ],
-          { duration: 1000, easing: 'ease-in-out', fill: 'forwards' },
+          { duration: 1500, easing: 'ease-in-out' },
         )
         glide.cancel()
-        out.onfinish = () => setRowAnim('')
-        later(() => onFailed(levelIndex + 1), 1500)
+        later(() => setRowAnim(''), 1000)
+        out.onfinish = () => {
+          // back in the options, greyed out: the child tries a different letter in the same round
+          setTried((t) => [...t, letter])
+          setRejected(null)
+          busy.current = false
+        }
       }
     }
   }
 
   const onDown = (e: React.PointerEvent<HTMLButtonElement>, letter: string) => {
-    if (busy.current || solved || rejected !== null) return
+    if (busy.current || solved || rejected !== null || tried.includes(letter)) return
     e.currentTarget.setPointerCapture(e.pointerId)
     sound.playTap()
     setDrag({ letter, pid: e.pointerId, sx: e.clientX, sy: e.clientY, dx: 0, dy: 0 })
@@ -228,7 +235,7 @@ export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }
             solved && ch === round.answer ? 'placed' : '',
             solved && ch !== round.answer ? 'faded' : '',
             rejected === ch ? 'rejected' : '',
-            rejected !== null && rejected !== ch ? 'faded' : '',
+            tried.includes(ch) ? 'tried' : '',
           ]
             .filter(Boolean)
             .join(' ')
@@ -249,9 +256,10 @@ export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }
               onPointerUp={onUp}
               onPointerCancel={onUp}
               onClick={(e) => {
-                if (e.detail === 0 && !busy.current && !solved && rejected === null) drop(ch, true) // keyboard
+                if (e.detail === 0 && !busy.current && !solved && rejected === null && !tried.includes(ch)) drop(ch, true) // keyboard
               }}
               aria-label={`${ch}, drag into the gap`}
+              disabled={tried.includes(ch)}
             >
               <span className={`count-num ${hint && !solved && rejected === null && ch === round.answer ? 'hint' : ''}`}>{ch}</span>
             </button>

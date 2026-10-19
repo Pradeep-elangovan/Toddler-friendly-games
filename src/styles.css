@@ -1769,6 +1769,12 @@ html.bw {
   visibility: hidden;
 }
 
+.series-options .count-option.tried {
+  opacity: 0.3;
+  filter: grayscale(0.6);
+  cursor: default;
+}
+
 .series-options .count-option.rejected {
   z-index: 30;
   pointer-events: none;

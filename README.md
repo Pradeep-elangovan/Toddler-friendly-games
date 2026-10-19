@@ -97,7 +97,7 @@ A run of letters in alphabet order with one missing in between (never the first 
 | 4 / 9 | Q to U / q to u |
 | 5 / 10 | V to Z / v to z |
 
-The two wrong options are random letters (same case) that are not already shown. The right letter fits and its neighbours lean in and hug it (with a little heart). A wrong letter doesn't fit: the neighbours squeeze together and push it out of the gap, and it is flung away in a random direction. That ends the run, like Pattern Match: the "Oops" screen shows the level reached and playing again starts at level 1. Dropping a letter anywhere but the gap just slides it back.
+The two wrong options are random letters (same case) that are not already shown. The right letter fits and its neighbours lean in and hug it (with a little heart). A wrong letter doesn't fit: the neighbours squeeze together and push it out of the gap, it is flung away in a random direction and drifts back to the options, greyed out. Nothing fails or resets: the child just tries a different letter in the same round. Dropping a letter anywhere but the gap just slides it back.
 
 ## Toddler-friendly details
 
