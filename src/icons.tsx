@@ -284,6 +284,30 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
           <circle cx="32" cy="32" r="3.4" fill="#2d3a4f" />
         </svg>
       )
+    case 'letterA':
+      return (
+        <svg {...common}>
+          <text x="32" y="33" textAnchor="middle" dominantBaseline="central" fontSize="52" fontWeight="900" fill="#ef476f" stroke="#b3203f" strokeWidth="2.5" paintOrder="stroke" fontFamily="inherit">
+            A
+          </text>
+        </svg>
+      )
+    case 'letterB':
+      return (
+        <svg {...common}>
+          <text x="32" y="33" textAnchor="middle" dominantBaseline="central" fontSize="52" fontWeight="900" fill="#3b82f6" stroke="#1d4ed8" strokeWidth="2.5" paintOrder="stroke" fontFamily="inherit">
+            B
+          </text>
+        </svg>
+      )
+    case 'letterC':
+      return (
+        <svg {...common}>
+          <text x="32" y="33" textAnchor="middle" dominantBaseline="central" fontSize="52" fontWeight="900" fill="#22c55e" stroke="#15803d" strokeWidth="2.5" paintOrder="stroke" fontFamily="inherit">
+            C
+          </text>
+        </svg>
+      )
     case 'banana':
       return (
         <svg {...common}>

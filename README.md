@@ -1,10 +1,10 @@
 # Toddler Friendly Games
 
-Offline-first React + Vite + TypeScript app with six playable games: **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting**, **Memory Match** and **Clock Time**.
+Offline-first React + Vite + TypeScript app with seven playable games: **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting**, **Memory Match**, **Clock Time** and **Missing Letter**.
 
 ## Home screen
 
-- Six big cards start the games.
+- Seven big cards start the games.
 - Top left: a **colour / black-and-white** switch. Black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
 - Top right: a **sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
@@ -85,6 +85,20 @@ Reading, setting and copying the hands of a clock, using only the numbers 1 to 1
 
 On levels 1 to 4 a wrong answer ends the run, like Pattern Match and Counting: the "Oops" screen shows the level reached and playing again starts at level 1. Levels 5 to 7 never fail: moving hands is hard for little fingers, so a wrong placement wobbles, the hand springs back and the right number pulses until the child gets it. On levels 1 to 4 the same three numbers are shown for both questions: the two answers plus one extra. Once the child picks the short hand's number it is used up (greyed out and disabled), and the long hand is answered from what is left. (Level 2 has the same answer for both hands, so that number stays available.) When a hand sits between two numbers, its other neighbour is used as the extra number where possible.
 
+## Missing Letter
+
+A run of letters in alphabet order with one missing in between (never the first or last). The child picks the missing letter out of three. Ten levels: capitals first, then the same five runs in small letters.
+
+| Levels | Letters |
+| --- | --- |
+| 1 / 6 | A to E / a to e |
+| 2 / 7 | F to K / f to k |
+| 3 / 8 | L to P / l to p |
+| 4 / 9 | Q to U / q to u |
+| 5 / 10 | V to Z / v to z |
+
+The two wrong options are random letters (same case) that are not already shown. A wrong pick ends the run, like Pattern Match: the letter turns red, the "Oops" screen shows the level reached and playing again starts at level 1.
+
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.
@@ -120,6 +134,7 @@ On levels 1 to 4 a wrong answer ends the run, like Pattern Match and Counting: t
 - `src/sound.ts`: sound effects
 - `src/App.tsx`: home, Pattern Match, finish screen, and the colour / sound switches
 - `src/TileGame.tsx`: the Tile Match game
+- `src/SeriesGame.tsx`, `src/seriesLogic.ts`: the Missing Letter game and its levels
 - `src/ClockGame.tsx`, `src/clockLogic.ts`: the Clock Time game and its levels
 - `src/MemoryGame.tsx`, `src/memoryLogic.ts`: the Memory Match game and its levels
 - `src/CountGame.tsx`, `src/countLogic.ts`: the Counting game and its levels

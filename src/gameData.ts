@@ -21,7 +21,7 @@ export const fruitNames = ['apple', 'banana', 'orange', 'grapes', 'strawberry', 
 export type FruitName = (typeof fruitNames)[number]
 
 /** Icons used only on the home screen cards. */
-export const cardOnlyNames = ['clock'] as const
+export const cardOnlyNames = ['clock', 'letterA', 'letterB', 'letterC'] as const
 
 export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number] | FruitName | (typeof cardOnlyNames)[number]
 
@@ -217,5 +217,12 @@ export const cards = [
     icons: ['clock', 'moon', 'star'] as IconName[],
     playable: true,
     color: '#ffd6a5',
+  },
+  {
+    id: 'series',
+    label: 'Missing Letter',
+    icons: ['letterA', 'letterB', 'letterC'] as IconName[],
+    playable: true,
+    color: '#bde0fe',
   },
 ]

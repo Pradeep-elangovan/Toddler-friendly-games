@@ -20,6 +20,8 @@ import MemoryGame from './MemoryGame'
 import { MEMORY_LEVEL_COUNT } from './memoryLogic'
 import ClockGame from './ClockGame'
 import { CLOCK_LEVEL_COUNT } from './clockLogic'
+import SeriesGame from './SeriesGame'
+import { SERIES_LEVEL_COUNT } from './seriesLogic'
 import { SORT_LEVEL_COUNT } from './sortLogic'
 import {
   ColorGlyph,
@@ -34,8 +36,8 @@ import {
 } from './ui'
 import * as sound from './sound'
 
-type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'winner' | 'failed'
-type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock'
+type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'winner' | 'failed'
+type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
@@ -154,8 +156,15 @@ export default function App() {
     setScreen('clock')
   }
 
+  const startSeries = () => {
+    clearTimers()
+    setActiveGame('series')
+    setRunId((n) => n + 1)
+    setScreen('series')
+  }
+
   const startGame = (game: GameId) =>
-    game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
+    game === 'series' ? startSeries() : game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
 
   const goHome = () => {
     clearTimers()
@@ -193,6 +202,8 @@ export default function App() {
       startMemory()
     } else if (id === 'clock') {
       startClock()
+    } else if (id === 'series') {
+      startSeries()
     } else {
       beginLevel(0)
     }
@@ -253,7 +264,9 @@ export default function App() {
             ? MEMORY_LEVEL_COUNT
             : activeGame === 'clock'
               ? CLOCK_LEVEL_COUNT
-              : LEVEL_COUNT
+              : activeGame === 'series'
+                ? SERIES_LEVEL_COUNT
+                : LEVEL_COUNT
 
   return (
     <div className="app-root">
@@ -456,6 +469,19 @@ export default function App() {
         />
       )}
 
+      {screen === 'series' && (
+        <SeriesGame
+          key={runId}
+          onHome={goHome}
+          onFinished={() => setScreen('winner')}
+          onFailed={(level) => {
+            setFailedAt(level)
+            setScreen('failed')
+          }}
+          soundButton={soundButton}
+        />
+      )}
+
       {screen === 'failed' && (
         <main className="winner failed-screen">
           <div className="winner-top">{soundButton}</div>
@@ -467,8 +493,10 @@ export default function App() {
               ? 'That was not the right number.'
               : activeGame === 'clock'
                 ? 'That was not the right place.'
+                : activeGame === 'series'
+                  ? 'That was not the missing letter.'
                 : 'That one was different.'} You got to level{' '}
-            {activeGame === 'count' || activeGame === 'clock' ? failedAt : levelIndex + 1}.</p>
+            {activeGame === 'count' || activeGame === 'clock' || activeGame === 'series' ? failedAt : levelIndex + 1}.</p>
           <p className="muted">Go Home and try again from level 1.</p>
           <div className="winner-buttons">
             <div className="big-action">
@@ -509,7 +537,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && (
+      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && screen !== 'series' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>
