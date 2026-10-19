@@ -81,7 +81,7 @@ Reading, setting and copying the hands of a clock, using only the numbers 1 to 1
 | 4 | Both hands sit between numbers (choose the closer one each time) |
 | 5 | Move the hands to the asked number (12, 3, 6 or 9): touch the clock or drag |
 | 6 | The same, with the other numbers (1, 2, 4, 5, 7, 8, 10, 11) |
-| 7 | Copy the time it is right now: a small clock shows the current time (rounded to the nearest 5 minutes) and the child moves the short hand, then the long hand, on the big clock to match. If the short hand is exactly half way between two numbers, either one counts |
+| 7 | Show the time it is right now: the child looks at a real clock (there is no clock to copy on screen) and moves the short hand, then the long hand, to show it. The time comes from the device, rounded to the nearest 5 minutes; if the short hand is exactly half way between two numbers, either one counts, and the time from 3 minutes ago is accepted too |
 
 On levels 1 to 4 a wrong answer ends the run, like Pattern Match and Counting: the "Oops" screen shows the level reached and playing again starts at level 1. Levels 5 to 7 never fail: moving hands is hard for little fingers, so a wrong placement wobbles, the hand springs back and the right number pulses until the child gets it. When a hand sits between two numbers, the other neighbour is always one of the wrong options.
 

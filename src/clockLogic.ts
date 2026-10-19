@@ -6,7 +6,7 @@ import { shuffle } from './gameData'
  * Each level has two questions: first the short (hour) hand, then the long (minute) hand.
  * Levels 1 to 4: read the clock and choose the number a hand points at.
  * Levels 5 and 6: move a hand to a number that is asked for.
- * Level 7: copy the time it is right now from a clock that is shown, onto a clock whose hands the child moves.
+ * Level 7: the child looks at a real clock and shows the time it is right now on the clock whose hands they move.
  * Levels 5 to 7 never fail the child: a wrong placement springs back and the child tries again.
  */
 export const CLOCK_LEVEL_COUNT = 7
@@ -20,7 +20,7 @@ export const clockLevels: ClockLevel[] = [
   { level: 4, mode: 'read' }, // both hands between numbers
   { level: 5, mode: 'set' }, // move the hands to 12, 3, 6, 9
   { level: 6, mode: 'set' }, // move the hands to the other numbers
-  { level: 7, mode: 'copy' }, // copy the time on a clock that shows the time right now
+  { level: 7, mode: 'copy' }, // look at a real clock and show the time it is right now
 ]
 
 export type HandName = 'hour' | 'minute'
@@ -34,12 +34,12 @@ export type ClockRound = {
   answer: { hour: number; minute: number }
   /** every number that counts as correct for each hand (only level 7 has more than one, when the short hand is half way) */
   accept: { hour: number[]; minute: number[] }
-  /** the clock to copy (level 7 only) */
+  /** where a real clock would show the time (level 7 only; kept for tests) */
   ref?: { hour: number; minute: number }
 }
 
 /**
- * The time to copy in level 7: the time right now, rounded to the nearest 5 minutes so the long hand sits on a number.
+ * The time to show in level 7: the time right now, rounded to the nearest 5 minutes so the long hand sits on a number.
  * The short hand sits where a real clock puts it (hour plus a fraction), and either neighbouring number is accepted
  * when it is exactly half way.
  */

@@ -5,6 +5,7 @@ import { HoldButton, HomeGlyph } from './ui'
 import {
   CLOCK_LEVEL_COUNT,
   clockLevels,
+  copyRound,
   makeClockRound,
   makeOptions,
   nearestNumber,
@@ -114,7 +115,7 @@ function ClockDial({
  * Clock Time. Every level asks two things: first about the short (hour) hand, then about the long (minute) hand.
  * Levels 1 to 4: choose the number the hand points at (the closest one, if it sits between two).
  * Levels 5 and 6: swing the hand to the asked number by touching or dragging on the clock.
- * Level 7: copy the time shown on a reference clock (the time right now) onto the clock the child moves.
+ * Level 7: look at a real clock and show the time it is right now (to the nearest 5 minutes) on the clock the child moves.
  * Levels 1 to 4: a wrong answer ends the run, like Pattern Match and Counting.
  * Levels 5 to 7: never fail. A wrong placement wobbles and springs back, and the right number pulses; the child tries again.
  */
@@ -208,11 +209,19 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
     later(() => onFailed(levelIndex + 1), 1200)
   }
 
-  const accepted = round.accept[hand]
+  // Level 7 copies the time on the child's own clock, so it is checked against the time right now
+  // (and a few minutes ago, in case the child took a while).
+  const acceptedNow = (): number[] => {
+    if (!isCopy) return round.accept[hand]
+    const now = Date.now()
+    const nums = [copyRound(new Date(now)), copyRound(new Date(now - 3 * 60000))].flatMap((r) => r.accept[hand])
+    return [...new Set(nums)]
+  }
+  const targetNow = isCopy ? copyRound().answer[hand] : target
 
   const onPick = (n: number) => {
     if (state !== 'idle') return
-    if (accepted.includes(n)) right()
+    if (acceptedNow().includes(n)) right()
     else wrong(n)
   }
 
@@ -239,7 +248,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
     setDragging(false)
     const n = nearestNumber(posFromEvent(e))
     setLive(n) // the hand snaps onto the number
-    if (accepted.includes(n)) {
+    if (acceptedNow().includes(n)) {
       sound.playTap()
       right(n)
     } else {
@@ -248,7 +257,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
       setNudge(true)
       setState('idle')
       later(() => {
-        setLive(startPos(target))
+        setLive(startPos(targetNow))
         setNudge(false)
       }, 800)
     }
@@ -265,7 +274,6 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
   }
   const shown: Shown = { hour: hourPos, minute: minutePos }
   const showHint = hint && state === 'idle'
-  const refShown: Shown | null = round.ref ? { hour: round.ref.hour, minute: round.ref.minute } : null
 
   return (
     <main className="game clock-game">
@@ -290,7 +298,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
       <p className="clock-ask" key={`${levelIndex}-${step}`}>
         {isCopy ? (
           <>
-            Copy the clock: move the <HandChip hand={hand} />
+            Look at a real clock. Move the <HandChip hand={hand} /> to show the time
           </>
         ) : isSet ? (
           <>
@@ -303,16 +311,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
         )}
       </p>
 
-      {refShown && (
-        <div className="clock-ref">
-          <svg viewBox="0 0 200 200" role="img" aria-label="The clock to copy: it shows the time right now.">
-            <ClockDial shown={refShown} asked={null} />
-          </svg>
-          <span className="clock-ref-label">The time now</span>
-        </div>
-      )}
-
-      <div className={`clock-wrap ${refShown ? 'with-ref' : ''}`}>
+      <div className="clock-wrap">
         <svg
           ref={svgRef}
           viewBox="0 0 200 200"
@@ -320,7 +319,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
           role="img"
           aria-label={
             isCopy
-              ? `Your clock. Move the ${HAND_WORD[hand]} so it matches the other clock.`
+              ? `A clock. Look at a real clock and move the ${HAND_WORD[hand]} to show the time.`
               : isSet
               ? `A clock. Move the ${HAND_WORD[hand]} to ${target}.`
               : `A clock. The short hand and the long hand point at numbers.`
@@ -330,7 +329,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
           onPointerUp={onUp}
           onPointerCancel={onUp}
         >
-          <ClockDial shown={shown} asked={hand} dragging={dragging} hotNumber={isSet && (showHint || nudge) ? target : null} failedPick={isSet ? failedPick : null} />
+          <ClockDial shown={shown} asked={hand} dragging={dragging} hotNumber={isSet && (showHint || nudge) ? targetNow : null} failedPick={isSet ? failedPick : null} />
         </svg>
         {state === 'right' && !celebrating && (
           <span className="clock-check" aria-hidden>
@@ -340,7 +339,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
       </div>
 
       {isSet ? (
-        <p className="clock-tip">{isCopy ? 'Touch the clock, or drag the hand, so it looks the same' : 'Touch the clock, or drag the hand, to the number'}</p>
+        <p className="clock-tip">{isCopy ? 'Touch the clock, or drag the hand, to the number' : 'Touch the clock, or drag the hand, to the number'}</p>
       ) : (
         <section className="count-options clock-options" aria-label="Pick the number" key={`opts-${levelIndex}-${step}`}>
           {options.map((n, i) => {
