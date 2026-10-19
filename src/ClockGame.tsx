@@ -37,11 +37,86 @@ function HandChip({ hand }: { hand: HandName }) {
   )
 }
 
+type Shown = Record<HandName, number>
+
+/** The clock face with its numbers and both hands. `asked` is the hand being asked about: it is drawn on top and the other fades. */
+function ClockDial({
+  shown,
+  asked,
+  dragging = false,
+  hotNumber = null,
+  failedPick = null,
+}: {
+  shown: Shown
+  asked: HandName | null
+  dragging?: boolean
+  hotNumber?: number | null
+  failedPick?: number | null
+}) {
+  const order: HandName[] = asked === 'hour' ? ['minute', 'hour'] : ['hour', 'minute'] // the asked hand is drawn on top
+  return (
+    <>
+      <circle cx="100" cy="100" r="96" fill="#fff" stroke="#ffb703" strokeWidth="6" />
+      <circle cx="100" cy="100" r="88" fill="#fffdf6" />
+      {NUMBERS.map((n) => {
+        const a = (n * 30 * Math.PI) / 180
+        const hot = hotNumber === n
+        return (
+          <g key={n} className={hot ? 'num-hint' : ''}>
+            {n === failedPick && (
+              <circle cx={100 + 76 * Math.sin(a)} cy={100 - 76 * Math.cos(a)} r="13" fill="#fecaca" />
+            )}
+            <text
+              x={100 + 76 * Math.sin(a)}
+              y={100 - 76 * Math.cos(a)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontSize="19"
+              fontWeight="800"
+              fill="#2d3a4f"
+            >
+              {n}
+            </text>
+          </g>
+        )
+      })}
+      {order.map((h) => {
+        const isAsked = h === asked
+        const deg = shown[h] * 30
+        return (
+          <g
+            key={h}
+            className={`hand ${h} ${isAsked ? 'asked' : asked ? 'other' : 'asked'} ${dragging && isAsked ? 'dragging' : ''}`}
+            style={{ transform: `rotate(${deg}deg)` }}
+          >
+            {h === 'hour' ? (
+              <>
+                <line x1="100" y1="106" x2="100" y2="62" stroke="#b3203f" strokeWidth="14" strokeLinecap="round" />
+                <line x1="100" y1="106" x2="100" y2="62" stroke="#ef476f" strokeWidth="9" strokeLinecap="round" />
+                <path d="M100 48 L110 66 L90 66Z" fill="#ef476f" stroke="#b3203f" strokeWidth="3" strokeLinejoin="round" />
+              </>
+            ) : (
+              <>
+                <line x1="100" y1="110" x2="100" y2="30" stroke="#1d4ed8" strokeWidth="6" strokeLinecap="round" />
+                <line x1="100" y1="110" x2="100" y2="30" stroke="#3b82f6" strokeWidth="3.4" strokeLinecap="round" />
+              </>
+            )}
+          </g>
+        )
+      })}
+      <circle cx="100" cy="100" r="7" fill="#2d3a4f" />
+      <circle cx="100" cy="100" r="2.6" fill="#ffd166" />
+    </>
+  )
+}
+
 /**
  * Clock Time. Every level asks two things: first about the short (hour) hand, then about the long (minute) hand.
  * Levels 1 to 4: choose the number the hand points at (the closest one, if it sits between two).
  * Levels 5 and 6: swing the hand to the asked number by touching or dragging on the clock.
- * A wrong answer ends the run, like Pattern Match and Counting.
+ * Level 7: copy the time shown on a reference clock (the time right now) onto the clock the child moves.
+ * Levels 1 to 4: a wrong answer ends the run, like Pattern Match and Counting.
+ * Levels 5 to 7: never fail. A wrong placement wobbles and springs back, and the right number pulses; the child tries again.
  */
 export default function ClockGame({ onHome, onFinished, onFailed, soundButton }: Props) {
   const [levelIndex, setLevelIndex] = useState(0)
@@ -54,6 +129,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
   const [setHour, setSetHour] = useState(0) // where the child left the short hand (set levels)
   const [celebrating, setCelebrating] = useState(false)
   const [hint, setHint] = useState(false)
+  const [nudge, setNudge] = useState(false) // a wrong placement on a set level: wobble, then pulse the right number
   const svgRef = useRef<SVGSVGElement>(null)
   const timers = useRef<number[]>([])
 
@@ -71,6 +147,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
   const hand: HandName = HANDS[step]
   const level = clockLevels[levelIndex]
   const isSet = round.mode === 'set'
+  const isCopy = level.mode === 'copy'
   const target = round.answer[hand]
   const startPos = (n: number) => (n === 12 ? 6 : 12) // a set-level hand starts away from where it has to go
 
@@ -91,6 +168,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
     setStep(nextStep)
     setState('idle')
     setFailedPick(null)
+    setNudge(false)
     if (r.mode === 'set') setLive(startPos(r.answer[HANDS[nextStep]]))
   }
 
@@ -130,9 +208,11 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
     later(() => onFailed(levelIndex + 1), 1200)
   }
 
+  const accepted = round.accept[hand]
+
   const onPick = (n: number) => {
     if (state !== 'idle') return
-    if (n === target) right()
+    if (accepted.includes(n)) right()
     else wrong(n)
   }
 
@@ -159,9 +239,19 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
     setDragging(false)
     const n = nearestNumber(posFromEvent(e))
     setLive(n) // the hand snaps onto the number
-    sound.playTap()
-    if (n === target) right(n)
-    else wrong(n)
+    if (accepted.includes(n)) {
+      sound.playTap()
+      right(n)
+    } else {
+      // Not failing here: the hand wobbles, springs back to where it started, and the right number pulses.
+      sound.playWrong()
+      setNudge(true)
+      setState('idle')
+      later(() => {
+        setLive(startPos(target))
+        setNudge(false)
+      }, 800)
+    }
   }
 
   // ----- what the clock shows -----
@@ -173,9 +263,9 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
     hourPos = round.hour
     minutePos = round.minute
   }
-  const shown: Record<HandName, number> = { hour: hourPos, minute: minutePos }
-  const order: HandName[] = hand === 'hour' ? ['minute', 'hour'] : ['hour', 'minute'] // the asked hand is drawn on top
+  const shown: Shown = { hour: hourPos, minute: minutePos }
   const showHint = hint && state === 'idle'
+  const refShown: Shown | null = round.ref ? { hour: round.ref.hour, minute: round.ref.minute } : null
 
   return (
     <main className="game clock-game">
@@ -198,7 +288,11 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
       </div>
 
       <p className="clock-ask" key={`${levelIndex}-${step}`}>
-        {isSet ? (
+        {isCopy ? (
+          <>
+            Copy the clock: move the <HandChip hand={hand} />
+          </>
+        ) : isSet ? (
           <>
             Move the <HandChip hand={hand} /> to <b className={`target-num ${hand}`}>{target}</b>
           </>
@@ -209,14 +303,25 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
         )}
       </p>
 
-      <div className="clock-wrap">
+      {refShown && (
+        <div className="clock-ref">
+          <svg viewBox="0 0 200 200" role="img" aria-label="The clock to copy: it shows the time right now.">
+            <ClockDial shown={refShown} asked={null} />
+          </svg>
+          <span className="clock-ref-label">The time now</span>
+        </div>
+      )}
+
+      <div className={`clock-wrap ${refShown ? 'with-ref' : ''}`}>
         <svg
           ref={svgRef}
           viewBox="0 0 200 200"
-          className={`clock-svg ${isSet ? 'movable' : ''} ${state}`}
+          className={`clock-svg ${isSet ? 'movable' : ''} ${state} ${nudge ? 'nudge' : ''}`}
           role="img"
           aria-label={
-            isSet
+            isCopy
+              ? `Your clock. Move the ${HAND_WORD[hand]} so it matches the other clock.`
+              : isSet
               ? `A clock. Move the ${HAND_WORD[hand]} to ${target}.`
               : `A clock. The short hand and the long hand point at numbers.`
           }
@@ -225,56 +330,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
           onPointerUp={onUp}
           onPointerCancel={onUp}
         >
-          <circle cx="100" cy="100" r="96" fill="#fff" stroke="#ffb703" strokeWidth="6" />
-          <circle cx="100" cy="100" r="88" fill="#fffdf6" />
-          {NUMBERS.map((n) => {
-            const a = (n * 30 * Math.PI) / 180
-            const hot = isSet && showHint && n === target
-            return (
-              <g key={n} className={hot ? 'num-hint' : ''}>
-                {isSet && state === 'failed' && n === failedPick && (
-                  <circle cx={100 + 76 * Math.sin(a)} cy={100 - 76 * Math.cos(a)} r="13" fill="#fecaca" />
-                )}
-                <text
-                  x={100 + 76 * Math.sin(a)}
-                  y={100 - 76 * Math.cos(a)}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize="19"
-                  fontWeight="800"
-                  fill="#2d3a4f"
-                >
-                  {n}
-                </text>
-              </g>
-            )
-          })}
-          {order.map((h) => {
-            const asked = h === hand
-            const deg = shown[h] * 30
-            return (
-              <g
-                key={h}
-                className={`hand ${h} ${asked ? 'asked' : 'other'} ${dragging && asked ? 'dragging' : ''}`}
-                style={{ transform: `rotate(${deg}deg)` }}
-              >
-                {h === 'hour' ? (
-                  <>
-                    <line x1="100" y1="106" x2="100" y2="62" stroke="#b3203f" strokeWidth="14" strokeLinecap="round" />
-                    <line x1="100" y1="106" x2="100" y2="62" stroke="#ef476f" strokeWidth="9" strokeLinecap="round" />
-                    <path d="M100 48 L110 66 L90 66Z" fill="#ef476f" stroke="#b3203f" strokeWidth="3" strokeLinejoin="round" />
-                  </>
-                ) : (
-                  <>
-                    <line x1="100" y1="110" x2="100" y2="30" stroke="#1d4ed8" strokeWidth="6" strokeLinecap="round" />
-                    <line x1="100" y1="110" x2="100" y2="30" stroke="#3b82f6" strokeWidth="3.4" strokeLinecap="round" />
-                  </>
-                )}
-              </g>
-            )
-          })}
-          <circle cx="100" cy="100" r="7" fill="#2d3a4f" />
-          <circle cx="100" cy="100" r="2.6" fill="#ffd166" />
+          <ClockDial shown={shown} asked={hand} dragging={dragging} hotNumber={isSet && (showHint || nudge) ? target : null} failedPick={isSet ? failedPick : null} />
         </svg>
         {state === 'right' && !celebrating && (
           <span className="clock-check" aria-hidden>
@@ -284,7 +340,7 @@ export default function ClockGame({ onHome, onFinished, onFailed, soundButton }:
       </div>
 
       {isSet ? (
-        <p className="clock-tip">Touch the clock, or drag the hand, to the number</p>
+        <p className="clock-tip">{isCopy ? 'Touch the clock, or drag the hand, so it looks the same' : 'Touch the clock, or drag the hand, to the number'}</p>
       ) : (
         <section className="count-options clock-options" aria-label="Pick the number" key={`opts-${levelIndex}-${step}`}>
           {options.map((n, i) => {

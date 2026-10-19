@@ -6,10 +6,12 @@ import { shuffle } from './gameData'
  * Each level has two questions: first the short (hour) hand, then the long (minute) hand.
  * Levels 1 to 4: read the clock and choose the number a hand points at.
  * Levels 5 and 6: move a hand to a number that is asked for.
+ * Level 7: copy the time it is right now from a clock that is shown, onto a clock whose hands the child moves.
+ * Levels 5 to 7 never fail the child: a wrong placement springs back and the child tries again.
  */
-export const CLOCK_LEVEL_COUNT = 6
+export const CLOCK_LEVEL_COUNT = 7
 
-export type ClockLevel = { level: number; mode: 'read' | 'set' }
+export type ClockLevel = { level: number; mode: 'read' | 'set' | 'copy' }
 
 export const clockLevels: ClockLevel[] = [
   { level: 1, mode: 'read' }, // both hands on different numbers
@@ -18,6 +20,7 @@ export const clockLevels: ClockLevel[] = [
   { level: 4, mode: 'read' }, // both hands between numbers
   { level: 5, mode: 'set' }, // move the hands to 12, 3, 6, 9
   { level: 6, mode: 'set' }, // move the hands to the other numbers
+  { level: 7, mode: 'copy' }, // copy the time on a clock that shows the time right now
 ]
 
 export type HandName = 'hour' | 'minute'
@@ -29,7 +32,36 @@ export type ClockRound = {
   minute: number
   /** the number each hand must end up pointing at (the answer for read levels, the target for set levels) */
   answer: { hour: number; minute: number }
+  /** every number that counts as correct for each hand (only level 7 has more than one, when the short hand is half way) */
+  accept: { hour: number[]; minute: number[] }
+  /** the clock to copy (level 7 only) */
+  ref?: { hour: number; minute: number }
 }
+
+/**
+ * The time to copy in level 7: the time right now, rounded to the nearest 5 minutes so the long hand sits on a number.
+ * The short hand sits where a real clock puts it (hour plus a fraction), and either neighbouring number is accepted
+ * when it is exactly half way.
+ */
+export function copyRound(now: Date = new Date()): ClockRound {
+  const total = Math.round((now.getHours() * 60 + now.getMinutes()) / 5) * 5
+  const hh = Math.floor(total / 60) % 12
+  const mm = total % 60
+  const hourPos = hh + mm / 60
+  const minutePos = mm / 5
+  const minuteNum = minutePos === 0 ? 12 : minutePos
+  const hourNums = NUMBERS.filter((n) => dist(hourPos, posOf(n)) <= 0.5 + 1e-9)
+  return {
+    mode: 'set',
+    hour: 0,
+    minute: 0,
+    answer: { hour: nearestNumber(hourPos), minute: minuteNum },
+    accept: { hour: hourNums, minute: [minuteNum] },
+    ref: { hour: hourPos, minute: minutePos },
+  }
+}
+
+const NUMBERS = Array.from({ length: 12 }, (_, i) => i + 1)
 
 /** The set levels use different numbers: level 5 the quarter numbers, level 6 all the others. */
 export const SET_POOLS: Record<5 | 6, readonly number[]> = {
@@ -62,13 +94,14 @@ function between(random: () => number): { pos: number; answer: number } {
   return { pos, answer: k }
 }
 
-export function makeClockRound(level: number, random: () => number = Math.random): ClockRound {
+export function makeClockRound(level: number, random: () => number = Math.random, now?: Date): ClockRound {
   const lv = Math.min(Math.max(Math.round(level), 1), CLOCK_LEVEL_COUNT)
+  if (lv === 7) return copyRound(now)
   if (lv >= 5) {
     const pool = SET_POOLS[lv as 5 | 6]
     const hour = pool[Math.floor(random() * pool.length)]
     const minute = pool[Math.floor(random() * pool.length)]
-    return { mode: 'set', hour: 0, minute: 0, answer: { hour, minute } }
+    return { mode: 'set', hour: 0, minute: 0, answer: { hour, minute }, accept: { hour: [hour], minute: [minute] } }
   }
   for (;;) {
     let hour: number, minute: number, ah: number, am: number
@@ -93,7 +126,7 @@ export function makeClockRound(level: number, random: () => number = Math.random
     }
     // the two hands must be easy to tell apart (except in level 2, where they sit on the same number on purpose)
     if (lv !== 2 && dist(hour, minute) < 1) continue
-    return { mode: 'read', hour, minute, answer: { hour: ah, minute: am } }
+    return { mode: 'read', hour, minute, answer: { hour: ah, minute: am }, accept: { hour: [ah], minute: [am] } }
   }
 }
 

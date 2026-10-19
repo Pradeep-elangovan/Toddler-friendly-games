@@ -71,7 +71,7 @@ Like Tile Match, but every card starts face down. Flip one card, then a second (
 
 ## Clock Time
 
-Reading and setting the hands of a clock, using only the numbers 1 to 12 (no minutes to convert). The short hand is thick and red, the long hand is thin and blue, and the hand being asked about is drawn on top while the other fades. Every level asks two questions: the short hand first, then the long hand.
+Reading, setting and copying the hands of a clock, using only the numbers 1 to 12 (no minutes to convert). The short hand is thick and red, the long hand is thin and blue, and the hand being asked about is drawn on top while the other fades. Every level asks two questions: the short hand first, then the long hand.
 
 | Level | What the child does |
 | --- | --- |
@@ -81,8 +81,9 @@ Reading and setting the hands of a clock, using only the numbers 1 to 12 (no min
 | 4 | Both hands sit between numbers (choose the closer one each time) |
 | 5 | Move the hands to the asked number (12, 3, 6 or 9): touch the clock or drag |
 | 6 | The same, with the other numbers (1, 2, 4, 5, 7, 8, 10, 11) |
+| 7 | Copy the time it is right now: a small clock shows the current time (rounded to the nearest 5 minutes) and the child moves the short hand, then the long hand, on the big clock to match. If the short hand is exactly half way between two numbers, either one counts |
 
-A wrong answer ends the run, like Pattern Match and Counting: the "Oops" screen shows the level reached and playing again starts at level 1. When a hand sits between two numbers, the other neighbour is always one of the wrong options.
+On levels 1 to 4 a wrong answer ends the run, like Pattern Match and Counting: the "Oops" screen shows the level reached and playing again starts at level 1. Levels 5 to 7 never fail: moving hands is hard for little fingers, so a wrong placement wobbles, the hand springs back and the right number pulses until the child gets it. When a hand sits between two numbers, the other neighbour is always one of the wrong options.
 
 ## Toddler-friendly details
 
