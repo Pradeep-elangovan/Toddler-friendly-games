@@ -4,8 +4,8 @@ Offline-first React + Vite + TypeScript app with seven playable games (Easy: Pat
 
 ## Screens
 
-- **Difficulty page** (the first screen): four big cards, **Easy**, **Medium**, **Hard** and **Impossible**. Easy and Medium are open; Hard and Impossible are marked "Coming soon" and just wiggle when tapped. The colour switch and sound switch live here too.
-- **Easy Games**: Pattern Match, Tile Match, Fruit Sort and Counting. **Medium Games**: Memory Match, Clock Time and Missing Letter. Each is a list of big cards, one per game. Top left is a back button to the difficulty page; top right are the colour switch and the sound switch. Leaving a game (hold the home button) returns here.
+- **Difficulty page** (the first screen): four big cards, **Easy**, **Medium**, **Hard** and **Impossible**. Easy, Medium and Hard are open; Impossible is marked "Coming soon" and just wiggles when tapped. The colour switch and sound switch live here too.
+- **Easy Games**: Pattern Match, Tile Match, Fruit Sort and Counting. **Medium Games**: Memory Match, Clock Time and Missing Letter. **Hard Games**: Spot the Difference. Each is a list of big cards, one per game. Top left is a back button to the difficulty page; top right are the colour switch and the sound switch. Leaving a game (hold the home button) returns here.
 - **Colour / black-and-white** switch: black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
 - **Sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
@@ -102,6 +102,20 @@ A run of letters in alphabet order with one missing in between (never the first 
 
 The two wrong options are random letters (same case) that are not already shown. The right letter fits and its neighbours lean in and hug it (with a little heart). A wrong letter doesn't fit: the neighbours squeeze together and push it out of the gap, it is flung away in a random direction and drifts back to the options, greyed out. Nothing fails or resets: the child just tries a different letter in the same round. Dropping a letter anywhere but the gap just slides it back.
 
+## Spot the Difference (Hard)
+
+Two pictures made of the same coloured shapes, one above the other; the lower one has a few changes. Tapping a change in either picture draws a red circle round it in **both** pictures. Tapping anywhere else does nothing at all, nothing can fail, and there is no clock. After 25 quiet seconds one of the missing differences pulses gently. Every picture is generated fresh, so no two games are the same. Made for older kids as well as little ones: the later levels are properly hard.
+
+| Level | Shapes | Differences | What changes |
+| --- | --- | --- | --- |
+| 1 | 8 big | 5 | a shape missing, a very different colour, an extra shape |
+| 2 | 12 | 6 | + a clearly bigger or smaller shape, a shape moved |
+| 3 | 16 | 7 | + a shape turned, a shape swapped for another kind; smaller changes |
+| 4 | 22 | 8 | the same kinds of change, but subtler (similar colours, small size and position changes) |
+| 5 | 30 small | 10 | the subtlest changes, among many small shapes |
+
+The differences are always spaced well apart, so their circles never run together.
+
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.
@@ -137,6 +151,7 @@ The two wrong options are random letters (same case) that are not already shown.
 - `src/sound.ts`: sound effects
 - `src/App.tsx`: home, Pattern Match, finish screen, and the colour / sound switches
 - `src/TileGame.tsx`: the Tile Match game
+- `src/SpotGame.tsx`, `src/spotLogic.ts`: the Spot the Difference game and its scene generator
 - `src/SeriesGame.tsx`, `src/seriesLogic.ts`: the Missing Letter game and its levels
 - `src/ClockGame.tsx`, `src/clockLogic.ts`: the Clock Time game and its levels
 - `src/MemoryGame.tsx`, `src/memoryLogic.ts`: the Memory Match game and its levels

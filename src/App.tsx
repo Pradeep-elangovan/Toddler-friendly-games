@@ -24,6 +24,8 @@ import ClockGame from './ClockGame'
 import { CLOCK_LEVEL_COUNT } from './clockLogic'
 import SeriesGame from './SeriesGame'
 import { SERIES_LEVEL_COUNT } from './seriesLogic'
+import SpotGame from './SpotGame'
+import { SPOT_LEVEL_COUNT } from './spotLogic'
 import { SORT_LEVEL_COUNT } from './sortLogic'
 import { BackGlyph,
   ColorGlyph,
@@ -38,8 +40,8 @@ import { BackGlyph,
 } from './ui'
 import * as sound from './sound'
 
-type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'winner' | 'failed'
-type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series'
+type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'spot' | 'winner' | 'failed'
+type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'spot'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
@@ -166,8 +168,15 @@ export default function App() {
     setScreen('series')
   }
 
+  const startSpot = () => {
+    clearTimers()
+    setActiveGame('spot')
+    setRunId((n) => n + 1)
+    setScreen('spot')
+  }
+
   const startGame = (game: GameId) =>
-    game === 'series' ? startSeries() : game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
+    game === 'spot' ? startSpot() : game === 'series' ? startSeries() : game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
 
   const goHome = () => {
     clearTimers()
@@ -218,6 +227,8 @@ export default function App() {
       startClock()
     } else if (id === 'series') {
       startSeries()
+    } else if (id === 'spot') {
+      startSpot()
     } else {
       beginLevel(0)
     }
@@ -280,7 +291,9 @@ export default function App() {
               ? CLOCK_LEVEL_COUNT
               : activeGame === 'series'
                 ? SERIES_LEVEL_COUNT
-                : LEVEL_COUNT
+                : activeGame === 'spot'
+                  ? SPOT_LEVEL_COUNT
+                  : LEVEL_COUNT
 
   return (
     <div className="app-root">
@@ -560,6 +573,15 @@ export default function App() {
         />
       )}
 
+      {screen === 'spot' && (
+        <SpotGame
+          key={runId}
+          onHome={goHome}
+          onFinished={() => setScreen('winner')}
+          soundButton={soundButton}
+        />
+      )}
+
       {screen === 'failed' && (
         <main className="winner failed-screen">
           <div className="winner-top">{soundButton}</div>
@@ -613,7 +635,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && screen !== 'series' && (
+      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && screen !== 'series' && screen !== 'spot' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>

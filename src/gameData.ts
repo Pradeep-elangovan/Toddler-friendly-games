@@ -21,7 +21,7 @@ export const fruitNames = ['apple', 'banana', 'orange', 'grapes', 'strawberry', 
 export type FruitName = (typeof fruitNames)[number]
 
 /** Icons used only on the home screen cards. */
-export const cardOnlyNames = ['clock', 'letterA', 'letterB', 'letterC'] as const
+export const cardOnlyNames = ['clock', 'letterA', 'letterB', 'letterC', 'search'] as const
 
 export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number] | FruitName | (typeof cardOnlyNames)[number]
 
@@ -234,12 +234,20 @@ export const cards = [
     playable: true,
     color: '#bde0fe',
   },
+  {
+    id: 'spot',
+    difficulty: 'hard' as DifficultyId,
+    label: 'Spot the Difference',
+    icons: ['search', 'star', 'heart'] as IconName[],
+    playable: true,
+    color: '#ffc8dd',
+  },
 ]
 
 /** The difficulty page that comes before the games. Only Easy has games so far. */
 export const difficulties = [
   { id: 'easy', label: 'Easy', stars: 1, playable: true, color: '#b8e0a0' },
   { id: 'medium', label: 'Medium', stars: 2, playable: true, color: '#ffe29a' },
-  { id: 'hard', label: 'Hard', stars: 3, playable: false, color: '#ffc09a' },
+  { id: 'hard', label: 'Hard', stars: 3, playable: true, color: '#ffc09a' },
   { id: 'impossible', label: 'Impossible', stars: 4, playable: false, color: '#ffa8b4' },
 ] as const

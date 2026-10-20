@@ -308,6 +308,14 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
           </text>
         </svg>
       )
+    case 'search':
+      return (
+        <svg {...common}>
+          <circle cx="27" cy="27" r="16" fill="#e0f2fe" stroke="#2563eb" strokeWidth="5" />
+          <path d="M20 20 Q24 15 30 16" stroke="#fff" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <path d="M39 39 L55 55" stroke="#92400e" strokeWidth="8" strokeLinecap="round" />
+        </svg>
+      )
     case 'banana':
       return (
         <svg {...common}>
