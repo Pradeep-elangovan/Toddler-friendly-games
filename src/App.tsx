@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
 import {
+  difficulties,
   cards,
   columnsFor,
   levels,
@@ -23,7 +24,7 @@ import { CLOCK_LEVEL_COUNT } from './clockLogic'
 import SeriesGame from './SeriesGame'
 import { SERIES_LEVEL_COUNT } from './seriesLogic'
 import { SORT_LEVEL_COUNT } from './sortLogic'
-import {
+import { BackGlyph,
   ColorGlyph,
   HoldButton,
   HomeGlyph,
@@ -36,14 +37,14 @@ import {
 } from './ui'
 import * as sound from './sound'
 
-type Screen = 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'winner' | 'failed'
+type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'winner' | 'failed'
 type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('home')
+  const [screen, setScreen] = useState<Screen>('levels')
   const [activeGame, setActiveGame] = useState<GameId>('pattern')
   const [runId, setRunId] = useState(0) // changes every time Tile Match starts, so it begins fresh
   const [levelIndex, setLevelIndex] = useState(0)
@@ -187,6 +188,16 @@ export default function App() {
     sound.playTap()
   }
 
+  const onDifficultyTap = (id: string, playable: boolean) => {
+    sound.playTap()
+    if (playable) {
+      setScreen('home') // the list of games for this difficulty (only Easy so far)
+    } else {
+      setWiggleCard(id)
+      later(() => setWiggleCard(null), 600)
+    }
+  }
+
   const onCardTap = (id: string, playable: boolean) => {
     sound.playTap()
     if (!playable) {
@@ -270,7 +281,7 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {screen === 'home' && (
+      {screen === 'levels' && (
         <>
           <header className="topbar">
             <div className="topbar-side">
@@ -286,9 +297,75 @@ export default function App() {
             </div>
             <div className="titles">
               <h1 className="title">Playful Patterns</h1>
-              <p className="subtitle">Tap the shapes that match</p>
+              <p className="subtitle">How tricky do you want it?</p>
             </div>
             <div className="topbar-side right">{soundButton}</div>
+          </header>
+
+          <main className="home">
+            <div className="cards difficulty-cards">
+              {difficulties.map((d) => (
+                <button
+                  key={d.id}
+                  className={`card difficulty ${d.playable ? 'playable' : 'coming'} ${wiggleCard === d.id ? 'wiggle' : ''}`}
+                  style={{ '--card-bg': d.color } as React.CSSProperties}
+                  onClick={() => onDifficultyTap(d.id, d.playable)}
+                  aria-label={d.playable ? `${d.label} games` : `${d.label}, coming soon`}
+                  aria-disabled={!d.playable}
+                >
+                  <div className="card-icons" aria-hidden>
+                    {Array.from({ length: d.stars }, (_, i) => (
+                      <div className="card-icon" key={i}>
+                        <Icon name="star" />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="card-label">{d.label}</div>
+                  {d.playable ? (
+                    <div className="play-badge" aria-hidden>
+                      ▶
+                    </div>
+                  ) : (
+                    <div className="coming-text">Coming soon</div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </main>
+        </>
+      )}
+
+      {screen === 'home' && (
+        <>
+          <header className="topbar wide">
+            <div className="topbar-side">
+              <button
+                className="round-btn back-btn"
+                onClick={() => {
+                  sound.playTap()
+                  setScreen('levels')
+                }}
+                aria-label="Back to the difficulty page"
+              >
+                <BackGlyph />
+              </button>
+            </div>
+            <div className="topbar-side right left-pair">
+              <button
+                className="round-btn color-btn"
+                onClick={toggleColor}
+                aria-label={bw ? 'Switch to colour' : 'Switch to black and white'}
+                aria-pressed={bw}
+                title={bw ? 'Switch to colour' : 'Switch to black and white'}
+              >
+                <ColorGlyph bw={bw} />
+              </button>
+              {soundButton}
+            </div>
+            <div className="titles">
+              <h1 className="title">Easy Games</h1>
+              <p className="subtitle">Tap a game to play</p>
+            </div>
           </header>
 
           <main className="home">

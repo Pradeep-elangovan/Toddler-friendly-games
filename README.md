@@ -2,12 +2,15 @@
 
 Offline-first React + Vite + TypeScript app with seven playable games: **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting**, **Memory Match**, **Clock Time** and **Missing Letter**.
 
-## Home screen
+## Screens
 
-- Seven big cards start the games.
-- Top left: a **colour / black-and-white** switch. Black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
-- Top right: a **sound on / off** switch.
+- **Difficulty page** (the first screen): four big cards, **Easy**, **Medium**, **Hard** and **Impossible**. Only Easy is open for now; the other three are marked "Coming soon" and just wiggle when tapped. The colour switch and sound switch live here too.
+- **Easy Games** (after tapping Easy): seven big cards, one per game. Top left is a back button to the difficulty page; top right are the colour switch and the sound switch. Leaving a game (hold the home button) returns here.
+- **Colour / black-and-white** switch: black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
+- **Sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
+
+To add games to another difficulty later, add the cards to a per-difficulty list in `src/gameData.ts` (`difficulties` holds the four cards on the first page; `cards` is the Easy list).
 
 ## Pattern Match
 

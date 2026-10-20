@@ -31,6 +31,14 @@ export function SpeakerGlyph({ off }: { off: boolean }) {
   )
 }
 
+export function BackGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden focusable="false">
+      <path d="M14.5 5 7.5 12l7 7" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </svg>
+  )
+}
+
 export function ReplayGlyph() {
   return (
     <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden focusable="false">

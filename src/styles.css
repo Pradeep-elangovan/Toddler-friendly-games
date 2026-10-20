@@ -136,6 +136,21 @@ button:focus-visible {
   padding: 16px 16px 4px;
 }
 
+.topbar.wide {
+  /* three buttons: back on the left, colour + sound on the right, and the title on its own row */
+  grid-template-columns: auto 1fr;
+  row-gap: 4px;
+}
+
+.topbar.wide .titles {
+  grid-column: 1 / -1;
+}
+
+.left-pair {
+  display: flex;
+  gap: 10px;
+}
+
 .topbar-side.right {
   justify-self: end;
 }
@@ -221,6 +236,11 @@ button:focus-visible {
 
 .card.playable .card-icon {
   flex-basis: 72px;
+}
+
+.card.difficulty .card-icon {
+  flex-basis: 56px;
+  padding: 8px;
 }
 
 .card-label {
