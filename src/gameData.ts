@@ -175,9 +175,12 @@ export function makeTiles(level: number, random: () => number = Math.random): Ti
   )
 }
 
+export type DifficultyId = 'easy' | 'medium' | 'hard' | 'impossible'
+
 export const cards = [
   {
     id: 'pattern',
+    difficulty: 'easy' as DifficultyId,
     label: 'Pattern Match',
     icons: ['star', 'heart', 'apple'] as IconName[],
     playable: true,
@@ -185,6 +188,7 @@ export const cards = [
   },
   {
     id: 'tiles',
+    difficulty: 'easy' as DifficultyId,
     label: 'Tile Match',
     icons: ['rainbow', 'cloud', 'flower'] as IconName[],
     playable: true,
@@ -192,6 +196,7 @@ export const cards = [
   },
   {
     id: 'sort',
+    difficulty: 'easy' as DifficultyId,
     label: 'Fruit Sort',
     icons: ['apple', 'banana', 'grapes'] as IconName[],
     playable: true,
@@ -199,6 +204,7 @@ export const cards = [
   },
   {
     id: 'count',
+    difficulty: 'easy' as DifficultyId,
     label: 'Counting',
     icons: ['star', 'heart', 'moon'] as IconName[],
     playable: true,
@@ -206,6 +212,7 @@ export const cards = [
   },
   {
     id: 'memory',
+    difficulty: 'medium' as DifficultyId,
     label: 'Memory Match',
     icons: ['rainbow', 'rocket', 'iceCream'] as IconName[],
     playable: true,
@@ -213,6 +220,7 @@ export const cards = [
   },
   {
     id: 'clock',
+    difficulty: 'medium' as DifficultyId,
     label: 'Clock Time',
     icons: ['clock', 'moon', 'star'] as IconName[],
     playable: true,
@@ -220,6 +228,7 @@ export const cards = [
   },
   {
     id: 'series',
+    difficulty: 'medium' as DifficultyId,
     label: 'Missing Letter',
     icons: ['letterA', 'letterB', 'letterC'] as IconName[],
     playable: true,
@@ -230,7 +239,7 @@ export const cards = [
 /** The difficulty page that comes before the games. Only Easy has games so far. */
 export const difficulties = [
   { id: 'easy', label: 'Easy', stars: 1, playable: true, color: '#b8e0a0' },
-  { id: 'medium', label: 'Medium', stars: 2, playable: false, color: '#ffe29a' },
+  { id: 'medium', label: 'Medium', stars: 2, playable: true, color: '#ffe29a' },
   { id: 'hard', label: 'Hard', stars: 3, playable: false, color: '#ffc09a' },
   { id: 'impossible', label: 'Impossible', stars: 4, playable: false, color: '#ffa8b4' },
 ] as const

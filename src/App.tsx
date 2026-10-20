@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
 import {
+  type DifficultyId,
   difficulties,
   cards,
   columnsFor,
@@ -56,6 +57,7 @@ export default function App() {
   const [hint, setHint] = useState(false)
   const [muted, setMuted] = useState(() => loadFlag(MUTE_KEY))
   const [bw, setBw] = useState(() => loadFlag(BW_KEY))
+  const [difficulty, setDifficulty] = useState<DifficultyId>('easy') // which list of games the home screen shows
   const [wiggleCard, setWiggleCard] = useState<string | null>(null)
 
   const timers = useRef<number[]>([])
@@ -191,7 +193,8 @@ export default function App() {
   const onDifficultyTap = (id: string, playable: boolean) => {
     sound.playTap()
     if (playable) {
-      setScreen('home') // the list of games for this difficulty (only Easy so far)
+      setDifficulty(id as DifficultyId)
+      setScreen('home') // the list of games for this difficulty
     } else {
       setWiggleCard(id)
       later(() => setWiggleCard(null), 600)
@@ -363,14 +366,16 @@ export default function App() {
               {soundButton}
             </div>
             <div className="titles">
-              <h1 className="title">Easy Games</h1>
+              <h1 className="title">{difficulties.find((d) => d.id === difficulty)?.label} Games</h1>
               <p className="subtitle">Tap a game to play</p>
             </div>
           </header>
 
           <main className="home">
             <div className="cards">
-              {cards.map((c) => (
+              {cards
+                .filter((c) => c.difficulty === difficulty)
+                .map((c) => (
                 <button
                   key={c.id}
                   className={`card ${c.playable ? 'playable' : 'coming'} ${wiggleCard === c.id ? 'wiggle' : ''}`}
