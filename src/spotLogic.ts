@@ -2,6 +2,7 @@
  * Spot the Difference. Two pictures made of the same coloured shapes; the second one has a few changes.
  * Tapping a change in either picture circles it in both. Tapping anywhere else does nothing.
  * Five levels, harder each time: more (and smaller) shapes, more differences and subtler changes.
+ * A shape is never just moved a little: the changes are missing, extra, colour, size, turned or a different kind.
  */
 export const SPOT_LEVEL_COUNT = 5
 
@@ -24,7 +25,7 @@ export type Shape = {
   rot: number
 }
 
-export type DiffType = 'missing' | 'extra' | 'color' | 'size' | 'shift' | 'rotate' | 'kind'
+export type DiffType = 'missing' | 'extra' | 'color' | 'size' | 'rotate' | 'kind'
 
 export type Diff = {
   id: number
@@ -46,18 +47,16 @@ export type SpotLevel = {
   /** size change: the changed shape is this much smaller or bigger */
   shrink: number
   grow: number
-  /** how far a shifted shape moves, in scene units */
-  shift: number
   /** how far a rotated shape turns, in degrees */
   turn: number
 }
 
 export const spotLevels: SpotLevel[] = [
-  { level: 1, shapes: 8, diffs: 5, size: [12, 16], types: ['missing', 'color', 'extra'], hue: 120, shrink: 0.6, grow: 1.5, shift: 9, turn: 45 },
-  { level: 2, shapes: 12, diffs: 6, size: [10, 14], types: ['missing', 'color', 'extra', 'size', 'shift'], hue: 90, shrink: 0.62, grow: 1.45, shift: 7.5, turn: 45 },
-  { level: 3, shapes: 16, diffs: 7, size: [8.5, 12], types: ['missing', 'color', 'extra', 'size', 'shift', 'rotate', 'kind'], hue: 55, shrink: 0.7, grow: 1.35, shift: 5.5, turn: 40 },
-  { level: 4, shapes: 22, diffs: 8, size: [7, 10], types: ['missing', 'color', 'extra', 'size', 'shift', 'rotate', 'kind'], hue: 36, shrink: 0.78, grow: 1.28, shift: 4.2, turn: 32 },
-  { level: 5, shapes: 30, diffs: 10, size: [5.8, 8.6], types: ['missing', 'color', 'extra', 'size', 'shift', 'rotate', 'kind'], hue: 26, shrink: 0.82, grow: 1.24, shift: 3.4, turn: 26 },
+  { level: 1, shapes: 8, diffs: 5, size: [12, 16], types: ['missing', 'color', 'extra'], hue: 120, shrink: 0.6, grow: 1.5, turn: 45 },
+  { level: 2, shapes: 12, diffs: 6, size: [10, 14], types: ['missing', 'color', 'extra', 'size'], hue: 90, shrink: 0.62, grow: 1.45, turn: 45 },
+  { level: 3, shapes: 16, diffs: 7, size: [8.5, 12], types: ['missing', 'color', 'extra', 'size', 'rotate', 'kind'], hue: 55, shrink: 0.7, grow: 1.35, turn: 40 },
+  { level: 4, shapes: 22, diffs: 8, size: [7, 10], types: ['missing', 'color', 'extra', 'size', 'rotate', 'kind'], hue: 36, shrink: 0.78, grow: 1.28, turn: 32 },
+  { level: 5, shapes: 30, diffs: 10, size: [5.8, 8.6], types: ['missing', 'color', 'extra', 'size', 'rotate', 'kind'], hue: 26, shrink: 0.82, grow: 1.24, turn: 26 },
 ]
 
 export type SpotScene = {
@@ -151,20 +150,6 @@ function tryScene(cfg: SpotLevel, random: () => number): SpotScene | null {
       // a bigger shape must still fit without touching its neighbours
       const fits = b.every((o) => o.id === shape.id || o.id === -1 || dist(cand.x, cand.y, o.x, o.y) >= (cand.s + o.s) / 2 + 0.6)
       if (apart(diff.cx, diff.cy, r) && fits && cand.x - cand.s / 2 > 2 && cand.x + cand.s / 2 < SCENE_W - 2 && cand.y - cand.s / 2 > 2 && cand.y + cand.s / 2 < SCENE_H - 2) b[idx] = cand
-      else diff = null
-    } else if (type === 'shift') {
-      const ang = random() * Math.PI * 2
-      const nx = shape.x + Math.cos(ang) * cfg.shift
-      const ny = shape.y + Math.sin(ang) * cfg.shift
-      const cand = { ...b[idx], x: nx, y: ny }
-      const fits =
-        nx - shape.s / 2 > 2 && nx + shape.s / 2 < SCENE_W - 2 && ny - shape.s / 2 > 2 && ny + shape.s / 2 < SCENE_H - 2 &&
-        b.every((o) => o.id === shape.id || o.id === -1 || dist(nx, ny, o.x, o.y) >= (shape.s + o.s) / 2 + 0.6)
-      const mx = (shape.x + nx) / 2
-      const my = (shape.y + ny) / 2
-      const r = cfg.shift / 2 + shape.s * 0.62
-      diff = { id: diffs.length, type, cx: mx, cy: my, r }
-      if (fits && apart(mx, my, r)) b[idx] = cand
       else diff = null
     } else if (type === 'rotate') {
       if (shape.kind === 'circle') {

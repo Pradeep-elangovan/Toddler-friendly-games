@@ -109,12 +109,12 @@ Two pictures made of the same coloured shapes, one above the other; the lower on
 | Level | Shapes | Differences | What changes |
 | --- | --- | --- | --- |
 | 1 | 8 big | 5 | a shape missing, a very different colour, an extra shape |
-| 2 | 12 | 6 | + a clearly bigger or smaller shape, a shape moved |
+| 2 | 12 | 6 | + a clearly bigger or smaller shape |
 | 3 | 16 | 7 | + a shape turned, a shape swapped for another kind; smaller changes |
-| 4 | 22 | 8 | the same kinds of change, but subtler (similar colours, small size and position changes) |
+| 4 | 22 | 8 | the same kinds of change, but subtler (similar colours, small size changes) |
 | 5 | 30 small | 10 | the subtlest changes, among many small shapes |
 
-The differences are always spaced well apart, so their circles never run together.
+A shape is never simply moved a little; the changes are missing, extra, colour, size, turned or a different kind of shape. The differences are always spaced well apart, so their circles never run together.
 
 ## Toddler-friendly details
 
