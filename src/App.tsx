@@ -39,6 +39,7 @@ import { BackGlyph,
   saveFlag,
 } from './ui'
 import * as sound from './sound'
+import { LockScreen, MinuteWarning, ScreenTimePanel, useScreenTime } from './ScreenTime'
 
 type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'spot' | 'winner' | 'failed'
 type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'spot'
@@ -48,6 +49,7 @@ const MUTE_KEY = 'tfg.muted'
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('levels')
+  const screenTime = useScreenTime()
   const [activeGame, setActiveGame] = useState<GameId>('pattern')
   const [runId, setRunId] = useState(0) // changes every time Tile Match starts, so it begins fresh
   const [levelIndex, setLevelIndex] = useState(0)
@@ -73,6 +75,15 @@ export default function App() {
     timers.current = []
   }
   useEffect(() => clearTimers, [])
+
+  // When screen time runs out, drop whatever game is on and go back to the first page, which is covered by the lock.
+  useEffect(() => {
+    if (screenTime.status === 'expired') {
+      clearTimers()
+      setCelebrating(false)
+      setScreen('levels')
+    }
+  }, [screenTime.status])
 
   // Black-and-white mode is a grayscale filter on the whole page (including confetti).
   useEffect(() => {
@@ -318,7 +329,8 @@ export default function App() {
             <div className="topbar-side right">{soundButton}</div>
           </header>
 
-          <main className="home">
+          <main className="home levels-home">
+            <ScreenTimePanel status={screenTime.status} timer={screenTime.timer} onStart={screenTime.start} onStop={screenTime.stop} />
             <div className="cards difficulty-cards">
               {difficulties.map((d) => (
                 <button
@@ -640,6 +652,9 @@ export default function App() {
           <small>All local · No accounts · No tracking</small>
         </footer>
       )}
+
+      <MinuteWarning remainingMs={screenTime.timer.remainingMs} />
+      {screenTime.status === 'expired' && <LockScreen onStart={screenTime.start} />}
     </div>
   )
 }

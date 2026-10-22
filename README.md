@@ -116,6 +116,14 @@ Two pictures made of the same coloured shapes, one above the other; the lower on
 
 A shape is never simply moved a little; the changes are missing, extra, colour, size, turned or a different kind of shape. The differences are always spaced well apart, so their circles never run together.
 
+## Screen time limit
+
+The first page has a **Screen time** strip with 15, 30 and 45 minute buttons (optional; with no timer the games are unlimited). The timer counts down only while the app is open and visible, and is remembered on the device (`tfg.screentime`), so closing the app does not reset it. A "1 minute left" note appears near the end.
+
+When time is up the app returns to the first page and a full-screen lock covers everything. A grown-up must answer a small sum (like 47 + 38) on the keypad (a computer keyboard works too). A wrong answer gives a new sum; three wrong answers rest the keypad for 30 seconds. A right answer lets them pick 15, 30 or 45 minutes to unlock. While a timer runs, **Change** also asks for the sum before it allows a new time or "No limit".
+
+This is a gentle limit for a shared family device, not a security lock: clearing the browser's site data resets it.
+
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.
@@ -158,3 +166,4 @@ A shape is never simply moved a little; the changes are missing, extra, colour, 
 - `src/CountGame.tsx`, `src/countLogic.ts`: the Counting game and its levels
 - `src/SortGame.tsx`, `src/sortLogic.ts`, `src/bucketArt.tsx`: the Fruit Sort game, its pure logic (levels, layout, throw) and the bucket art
 - `src/styles.css`: styling and animations
+- `screenTimeLogic.ts` (timer, sums, tests) and `ScreenTime.tsx` (panel, grown-up keypad, lock screen): screen time limit.
