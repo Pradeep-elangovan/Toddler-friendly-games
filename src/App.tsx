@@ -581,6 +581,10 @@ export default function App() {
           key={runId}
           onHome={goHome}
           onFinished={() => setScreen('winner')}
+          onFailed={(level) => {
+            setFailedAt(level)
+            setScreen('failed')
+          }}
           soundButton={soundButton}
         />
       )}
@@ -605,8 +609,10 @@ export default function App() {
               ? 'That was not the right number.'
               : activeGame === 'clock'
                 ? 'That was not the right place.'
-                : 'That one was different.'} You got to level{' '}
-            {activeGame === 'count' || activeGame === 'clock' ? failedAt : levelIndex + 1}.</p>
+                : activeGame === 'series'
+                  ? 'That was not the right letter.'
+                  : 'That one was different.'} You got to level{' '}
+            {activeGame === 'count' || activeGame === 'clock' || activeGame === 'series' ? failedAt : levelIndex + 1}.</p>
           <p className="muted">Go Home and try again from level 1.</p>
           <div className="winner-buttons">
             <div className="big-action">

@@ -10,6 +10,8 @@ type Props = {
   onHome: () => void
   /** called after the last level is cleared */
   onFinished: () => void
+  /** called when a wrong letter is dropped; the level reached */
+  onFailed: (level: number) => void
   soundButton: React.ReactNode
 }
 
@@ -20,15 +22,14 @@ const TILE_COLORS = ['#ffb4a2', '#ffd166', '#a0e7e5', '#cdb4f6', '#b8e0a0', '#bd
  * Missing Letter: letters in alphabet order with one hidden. Drag the missing letter, out of three, into the gap.
  * The right letter is hugged by its new neighbours. A wrong letter is squeezed out of the gap and flung away
  * (the neighbours squeeze together and push it out, it is flung away and drifts back to the options greyed out).
- * Nothing ever fails: the child just tries a different letter in the same round.
+ * A wrong letter ends the game (after it is flung out): the child starts again from level 1, so guessing does not pay.
  * Dropping a letter anywhere else just slides it back.
  */
-export default function SeriesGame({ onHome, onFinished, soundButton }: Props) {
+export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }: Props) {
   const [levelIndex, setLevelIndex] = useState(0)
   const [round, setRound] = useState<SeriesRound>(() => makeSeriesRound(1))
   const [solved, setSolved] = useState(false) // the right letter is in the gap
   const [rejected, setRejected] = useState<string | null>(null) // the wrong letter being squeezed out right now
-  const [tried, setTried] = useState<string[]>([]) // wrong letters already squeezed out (greyed out for this round)
   const [rowAnim, setRowAnim] = useState<'' | 'hug' | 'squeeze'>('')
   const [drag, setDrag] = useState<{ letter: string; pid: number; sx: number; sy: number; dx: number; dy: number } | null>(null)
   const [celebrating, setCelebrating] = useState(false) // the "Great job" card, shown after the hug
@@ -64,7 +65,6 @@ export default function SeriesGame({ onHome, onFinished, soundButton }: Props) {
     setSolved(false)
     setCelebrating(false)
     setRejected(null)
-    setTried([])
     setRowAnim('')
     setDrag(null)
   }
@@ -148,17 +148,15 @@ export default function SeriesGame({ onHome, onFinished, soundButton }: Props) {
         glide.cancel()
         later(() => setRowAnim(''), 1000)
         out.onfinish = () => {
-          // back in the options, greyed out: the child tries a different letter in the same round
-          setTried((t) => [...t, letter])
-          setRejected(null)
-          busy.current = false
+          // the game is over: back to level 1 (busy stays set so nothing else can be dropped meanwhile)
+          onFailed(levelIndex + 1)
         }
       }
     }
   }
 
   const onDown = (e: React.PointerEvent<HTMLButtonElement>, letter: string) => {
-    if (busy.current || solved || rejected !== null || tried.includes(letter)) return
+    if (busy.current || solved || rejected !== null) return
     e.currentTarget.setPointerCapture(e.pointerId)
     sound.playTap()
     setDrag({ letter, pid: e.pointerId, sx: e.clientX, sy: e.clientY, dx: 0, dy: 0 })
@@ -235,7 +233,6 @@ export default function SeriesGame({ onHome, onFinished, soundButton }: Props) {
             solved && ch === round.answer ? 'placed' : '',
             solved && ch !== round.answer ? 'faded' : '',
             rejected === ch ? 'rejected' : '',
-            tried.includes(ch) ? 'tried' : '',
           ]
             .filter(Boolean)
             .join(' ')
@@ -256,10 +253,9 @@ export default function SeriesGame({ onHome, onFinished, soundButton }: Props) {
               onPointerUp={onUp}
               onPointerCancel={onUp}
               onClick={(e) => {
-                if (e.detail === 0 && !busy.current && !solved && rejected === null && !tried.includes(ch)) drop(ch, true) // keyboard
+                if (e.detail === 0 && !busy.current && !solved && rejected === null) drop(ch, true) // keyboard
               }}
               aria-label={`${ch}, drag into the gap`}
-              disabled={tried.includes(ch)}
             >
               <span className={`count-num ${hint && !solved && rejected === null && ch === round.answer ? 'hint' : ''}`}>{ch}</span>
             </button>
