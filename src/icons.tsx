@@ -479,3 +479,73 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
 function FaceDisc() {
   return <circle cx="32" cy="32" r="27" fill="#fde047" stroke="#f59e0b" strokeWidth="3" />
 }
+
+
+/** One face of a die (1 to 6). */
+export function DieFace({ n }: { n: number }) {
+  const P = 18, M = 32, F = 46
+  const pips: Record<number, [number, number][]> = {
+    1: [[M, M]],
+    2: [[P, P], [F, F]],
+    3: [[P, P], [M, M], [F, F]],
+    4: [[P, P], [F, P], [P, F], [F, F]],
+    5: [[P, P], [F, P], [M, M], [P, F], [F, F]],
+    6: [[P, P], [F, P], [P, M], [F, M], [P, F], [F, F]],
+  }
+  return (
+    <svg viewBox="0 0 64 64" className="icon die" aria-hidden focusable={false}>
+      <rect x="4" y="4" width="56" height="56" rx="12" fill="#fff" stroke="#475569" strokeWidth="3" />
+      {(pips[n] ?? []).map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r="5.5" fill="#1e293b" />
+      ))}
+    </svg>
+  )
+}
+
+/** One hand, palm towards us, with `up` fingers raised (counting order: index, middle, ring, little finger, thumb). */
+function Hand({ up }: { up: number }) {
+  // x positions of little, ring, middle, index; raised in the order index, middle, ring, little
+  const fingers = [
+    { x: 14, top: 14, raised: up >= 4 },
+    { x: 23, top: 8, raised: up >= 3 },
+    { x: 32, top: 4, raised: up >= 2 },
+    { x: 41, top: 8, raised: up >= 1 },
+  ]
+  return (
+    <g stroke="#c2410c" strokeWidth="2.2" strokeLinejoin="round" fill="#fdba74">
+      {fingers.map((f, i) =>
+        f.raised ? <rect key={i} x={f.x} y={f.top} width="8.5" height={40 - f.top} rx="4.2" /> : null,
+      )}
+      <path d="M12 36 H50 V54 Q50 62 40 62 H22 Q12 62 12 52Z" />
+      {fingers.map((f, i) =>
+        f.raised ? null : <path key={i} d={`M${f.x} 36 V30 Q${f.x + 4.2} 24 ${f.x + 8.5} 30 V36Z`} />,
+      )}
+      {up >= 5 ? (
+        <rect x="4" y="30" width="9" height="22" rx="4.5" transform="rotate(-30 8 42)" />
+      ) : (
+        <path d="M10 40 Q18 48 24 42" fill="none" strokeLinecap="round" />
+      )}
+    </g>
+  )
+}
+
+/** One hand (1 to 5 fingers) or two hands (6 to 10): the left hand is always all five up. */
+export function Fingers({ n }: { n: number }) {
+  if (n <= 5) {
+    return (
+      <svg viewBox="0 0 64 64" className="icon hand" aria-hidden focusable={false}>
+        <Hand up={n} />
+      </svg>
+    )
+  }
+  return (
+    <svg viewBox="0 0 128 64" className="icon hands" aria-hidden focusable={false}>
+      <g transform="translate(64 0) scale(-1 1)">
+        <Hand up={5} />
+      </g>
+      <g transform="translate(64 0)">
+        <Hand up={n - 5} />
+      </g>
+    </svg>
+  )
+}

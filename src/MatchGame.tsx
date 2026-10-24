@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import confetti from 'canvas-confetti'
-import { Icon } from './icons'
+import { DieFace, Fingers, Icon } from './icons'
 import { HoldButton, HomeGlyph } from './ui'
-import { MATCH_LEVELS, MATCH_LEVEL_COUNT, makeMatchRound, type MatchRound } from './matchLogic'
+import { MATCH_LEVELS, MATCH_LEVEL_COUNT, makeMatchRound, matchStageCount, type MatchRound, type Visual } from './matchLogic'
 import * as sound from './sound'
 
 type Props = {
@@ -16,6 +16,25 @@ type Props = {
 const TILE_COLORS = ['#ff8fa3', '#6cc3f5', '#7bd88f', '#ffb86b', '#b79cf2', '#5fd3c4', '#f7a1d4']
 const NAMES: Record<string, string> = { iceCream: 'ice cream' }
 
+/** What a pile or a tile shows: some things, a die, hands, or just a number. */
+function Picture({ v }: { v: Visual }) {
+  if (v.kind === 'number') return <>{v.n}</>
+  if (v.kind === 'die') return <DieFace n={v.n} />
+  if (v.kind === 'hand') return <Fingers n={v.n} />
+  return (
+    <span className="match-items" style={{ '--per': v.n <= 4 ? v.n : Math.ceil(v.n / 2), '--rows': v.n <= 4 ? 1 : 2 } as React.CSSProperties}>
+      {Array.from({ length: v.n }, (_, k) => (
+        <span className="match-item" key={k}>
+          <Icon name={v.icon} />
+        </span>
+      ))}
+    </span>
+  )
+}
+
+const describe = (v: Visual) =>
+  v.kind === 'items' ? `${v.n} ${NAMES[v.icon] ?? v.icon}` : v.kind === 'die' ? `dice showing ${v.n}` : v.kind === 'hand' ? `${v.n} fingers` : `${v.n}`
+
 /**
  * Number Match: piles of animals, fruit and vegetables on the left, numbers on the right. Drag each number onto the
  * pile with that many things. A right match snaps the number onto its pile. A wrong pile ends the run (back to level 1),
@@ -23,8 +42,9 @@ const NAMES: Record<string, string> = { iceCream: 'ice cream' }
  */
 export default function MatchGame({ onHome, onFinished, onFailed, soundButton }: Props) {
   const [levelIndex, setLevelIndex] = useState(0)
+  const [stage, setStage] = useState(0) // some levels come in parts
   const [round, setRound] = useState<MatchRound>(() => makeMatchRound(1))
-  const [matched, setMatched] = useState<Record<number, { dx: number; dy: number }>>({}) // number -> where it snapped
+  const [matched, setMatched] = useState<Record<number, { dx: number; dy: number; scale: number }>>({}) // number -> where it snapped
   const [wrongGroup, setWrongGroup] = useState<number | null>(null) // pile that was wrongly chosen
   const [wrongNum, setWrongNum] = useState<number | null>(null)
   const [drag, setDrag] = useState<{ n: number; pid: number; sx: number; sy: number; dx: number; dy: number } | null>(null)
@@ -45,10 +65,11 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
     [],
   )
 
-  const beginLevel = (index: number) => {
+  const beginLevel = (index: number, part = 0) => {
     busy.current = false
     setLevelIndex(index)
-    setRound(makeMatchRound(index + 1))
+    setStage(part)
+    setRound(makeMatchRound(index + 1, part))
     setMatched({})
     setWrongGroup(null)
     setWrongNum(null)
@@ -85,19 +106,20 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
       )
       setDrag(null)
     }
-    if (target < 0 || matched[round.groups[target].count] !== undefined) {
+    if (target < 0 || matched[round.left[target].n] !== undefined) {
       slide()
       return
     }
-    if (round.groups[target].count === n) {
+    if (round.left[target].n === n) {
       // right: the number snaps onto its pile
       const slot = slotRefs.current[target]!.getBoundingClientRect()
       const home = { x: centre(tile.getBoundingClientRect()).x - cur.dx, y: centre(tile.getBoundingClientRect()).y - cur.dy }
       const sc = centre(slot)
-      const next = { ...matched, [n]: { dx: sc.x - home.x, dy: sc.y - home.y } }
+      const scale = Math.min(0.78, (slot.width * 0.96) / tile.offsetWidth, (slot.height * 0.96) / tile.offsetHeight)
+      const next = { ...matched, [n]: { dx: sc.x - home.x, dy: sc.y - home.y, scale } }
       setMatched(next)
       setDrag(null)
-      const done = Object.keys(next).length === round.groups.length
+      const done = Object.keys(next).length === round.left.length
       sound.playCorrect(Object.keys(next).length - 1)
       if (done) {
         busy.current = true
@@ -107,7 +129,8 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
           confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 }, disableForReducedMotion: true })
         }, 700)
         later(() => {
-          if (levelIndex < MATCH_LEVEL_COUNT - 1) beginLevel(levelIndex + 1)
+          if (stage < matchStageCount(levelIndex + 1) - 1) beginLevel(levelIndex, stage + 1)
+          else if (levelIndex < MATCH_LEVEL_COUNT - 1) beginLevel(levelIndex + 1)
           else onFinished()
         }, 2700)
       }
@@ -137,7 +160,7 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
     drop(drag.n, e.clientX, e.clientY)
   }
 
-  const n = round.groups.length
+  const n = round.left.length
   return (
     <main className="game match-game">
       <header className="gamebar">
@@ -152,30 +175,30 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
         {soundButton}
       </header>
 
-      <p className="count-ask">Match each number</p>
+      <p className="count-ask">Match them up</p>
 
-      <section className="match-board" key={`board-${levelIndex}`} style={{ '--n': n } as React.CSSProperties}>
+      <section
+        className={`match-board right-${round.right[0].kind}`}
+        key={`board-${levelIndex}-${stage}`}
+        style={{ '--n': n } as React.CSSProperties}
+      >
         <div className="match-col piles" aria-label="Piles">
-          {round.groups.map((g, i) => {
-            const done = matched[g.count] !== undefined
+          {round.left.map((g, i) => {
+            const done = matched[g.n] !== undefined
             return (
               <div
                 key={i}
                 ref={(el) => {
                   groupRefs.current[i] = el
                 }}
-                className={`match-card ${done ? 'matched' : ''} ${wrongGroup === i ? 'wrong' : ''} ${drag ? 'ready' : ''}`}
+                className={`match-card left-${g.kind} ${done ? 'matched' : ''} ${wrongGroup === i ? 'wrong' : ''} ${drag ? 'ready' : ''}`}
                 style={{ '--d': `${i * 70}ms` } as React.CSSProperties}
                 role="img"
-                aria-label={`${g.count} ${NAMES[g.icon] ?? g.icon}`}
+                aria-label={describe(g)}
               >
-                <div className="match-items">
-                  {Array.from({ length: g.count }, (_, k) => (
-                    <span className="match-item" key={k}>
-                      <Icon name={g.icon} />
-                    </span>
-                  ))}
-                </div>
+                <span className="match-pic">
+                  <Picture v={g} />
+                </span>
                 <span
                   className="match-slot"
                   ref={(el) => {
@@ -186,35 +209,35 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
             )
           })}
         </div>
-        <div className="match-col nums" aria-label="Numbers">
-          {round.numbers.map((num, i) => {
-            const m = matched[num]
-            const dragging = drag?.n === num
+        <div className="match-col nums" aria-label="Matches">
+          {round.right.map((v, i) => {
+            const m = matched[v.n]
+            const dragging = drag?.n === v.n
             const style = {
               '--c': TILE_COLORS[i % TILE_COLORS.length],
               '--d': `${i * 70}ms`,
               ...(dragging
                 ? { transform: `translate(${drag.dx}px, ${drag.dy}px) scale(1.12) rotate(-4deg)` }
                 : m
-                  ? { transform: `translate(${m.dx}px, ${m.dy}px) scale(0.78)` }
+                  ? { transform: `translate(${m.dx}px, ${m.dy}px) scale(${m.scale})` }
                   : {}),
             } as React.CSSProperties
             return (
-              <div className="match-cell" key={num}>
+              <div className="match-cell" key={v.n}>
                 <button
                   ref={(el) => {
-                    tileRefs.current[num] = el
+                    tileRefs.current[v.n] = el
                   }}
-                  className={`match-tile ${dragging ? 'dragging' : ''} ${m ? 'placed' : ''} ${wrongNum === num ? 'wrong' : ''}`}
+                  className={`match-tile ${v.kind === 'number' ? '' : 'wide'} ${dragging ? 'dragging' : ''} ${m ? 'placed' : ''} ${wrongNum === v.n ? 'wrong' : ''}`}
                   style={style}
-                  onPointerDown={(e) => onDown(e, num)}
+                  onPointerDown={(e) => onDown(e, v.n)}
                   onPointerMove={onMove}
                   onPointerUp={onUp}
                   onPointerCancel={onUp}
-                  aria-label={`${num}, drag to its pile`}
+                  aria-label={`${describe(v)}, drag to its pile`}
                   disabled={!!m}
                 >
-                  {num}
+                  <Picture v={v} />
                 </button>
               </div>
             )

@@ -107,6 +107,10 @@ The two wrong options are random letters (same case) that are not already shown.
 Piles of little animals, fruit and vegetables are on the left (each pile a different kind of thing and a different count) and the numbers are on the right, in an order where no number sits level with its own pile. The child drags each number onto the pile with that many things. A right match snaps the number onto its pile and turns it green. Dropping a number on the wrong pile ends the run (the "Oops" screen, then level 1 again), so guessing does not pay; dropping it anywhere else slides it back.
 
 - Level 1: 2 pairs (counts 1 to 5). Level 2: 5 pairs (1 to 7). Level 3: 7 pairs (1 to 9).
+- Level 4: a single die on each row (faces 1 to 6), matched with numbers.
+- Level 5: hands showing fingers, matched with numbers, in two parts: one hand (1 to 5 fingers), then two hands (6 to 10).
+- Level 6: piles matched with piles of a *different* kind of thing (same amount). Level 7: piles matched with piles of the *same* kind of thing.
+- On levels 6 and 7 the right-hand tiles are piles, not numbers; drag a pile onto the left pile with the same amount.
 
 ## Spot the Difference (Hard)
 

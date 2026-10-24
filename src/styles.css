@@ -1957,3 +1957,22 @@ html.bw {
 .match-tile.dragging { transition: none; z-index: 20; cursor: grabbing; }
 .match-tile.placed { background: #37b24d; z-index: 2; }
 .match-tile.wrong { background: #ef4444; animation: shake .5s ease; }
+
+/* Number Match, levels 4 to 7: dice, hands, and piles on both sides */
+.match-pic { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; height: 100%; }
+.match-pic .match-items { width: 100%; }
+.match-pic .die { height: min(78cqh, 56px); width: auto; }
+.match-pic .hand { height: min(80cqh, 58px); width: auto; }
+.match-pic .hands { height: min(80cqh, 58px); width: auto; max-width: 100%; }
+.match-board.right-items { grid-template-columns: 1.15fr 1fr; }
+.match-tile.wide { aspect-ratio: auto; width: 100%; height: min(100%, 96px); container-type: size; display: flex; align-items: center; justify-content: center; padding: 2px 6px; background: #fff; color: var(--ink); text-shadow: none; border: 3px solid var(--c); border-bottom-width: 6px; font-size: 0; }
+.match-tile.wide .match-items { width: 100%; }
+.match-tile.wide.placed { background: #d3f9d8; border-color: #37b24d; }
+.match-tile.wide.wrong { background: #ffe3e3; border-color: #ef4444; }
+.match-board.right-items .match-slot { width: 46%; }
+
+/* item size: as big as fits both the height and the width, with at most two rows */
+.match-items { --f: 0.56; --isz: min(34px, calc(86cqh / var(--rows, 1)), calc(var(--f) * 100cqw / var(--per, 4) - 3px)); max-width: calc(var(--per, 4) * (var(--isz) + 2px)); margin: 0 auto; }
+.match-item { width: var(--isz); height: var(--isz); }
+.match-board.right-items .match-card .match-items { --f: 0.4; }
+.match-tile.wide .match-items { --f: 0.88; }
