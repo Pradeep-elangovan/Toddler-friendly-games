@@ -23,7 +23,12 @@ export type FruitName = (typeof fruitNames)[number]
 /** Icons used only on the home screen cards. */
 export const cardOnlyNames = ['clock', 'letterA', 'letterB', 'letterC', 'search'] as const
 
-export type IconName = (typeof iconNames)[number] | (typeof lookAlikeNames)[number] | FruitName | (typeof cardOnlyNames)[number]
+/** Animals and vegetables used by Number Match, together with the fruit. */
+export const critterNames = ['carrot', 'broccoli', 'fish', 'duck', 'ladybug', 'frog'] as const
+
+export type IconName =
+  | (typeof critterNames)[number]
+  | (typeof iconNames)[number] | (typeof lookAlikeNames)[number] | FruitName | (typeof cardOnlyNames)[number]
 
 export const LEVEL_COUNT = 10
 
@@ -233,6 +238,14 @@ export const cards = [
     icons: ['letterA', 'letterB', 'letterC'] as IconName[],
     playable: true,
     color: '#bde0fe',
+  },
+  {
+    id: 'match',
+    difficulty: 'medium' as DifficultyId,
+    label: 'Number Match',
+    icons: ['banana', 'fish', 'carrot'] as IconName[],
+    playable: true,
+    color: '#ffc8dd',
   },
   {
     id: 'spot',

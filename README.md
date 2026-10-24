@@ -1,11 +1,11 @@
 # Toddler Friendly Games
 
-Offline-first React + Vite + TypeScript app with seven playable games (Easy: Pattern Match, Tile Match, Fruit Sort, Counting; Medium: Memory Match, Clock Time, Missing Letter): **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting**, **Memory Match**, **Clock Time** and **Missing Letter**.
+Offline-first React + Vite + TypeScript app with eight playable games (Easy: Pattern Match, Tile Match, Fruit Sort, Counting; Medium: Memory Match, Clock Time, Missing Letter, Number Match): **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting**, **Memory Match**, **Clock Time**, **Missing Letter** and **Number Match**.
 
 ## Screens
 
 - **Difficulty page** (the first screen): four big cards, **Easy**, **Medium**, **Hard** and **Impossible**. Easy, Medium and Hard are open; Impossible is marked "Coming soon" and just wiggles when tapped. The colour switch and sound switch live here too.
-- **Easy Games**: Pattern Match, Tile Match, Fruit Sort and Counting. **Medium Games**: Memory Match, Clock Time and Missing Letter. **Hard Games**: Spot the Difference. Each is a list of big cards, one per game. Top left is a back button to the difficulty page; top right are the colour switch and the sound switch. Leaving a game (hold the home button) returns here.
+- **Easy Games**: Pattern Match, Tile Match, Fruit Sort and Counting. **Medium Games**: Memory Match, Clock Time, Missing Letter and Number Match. **Hard Games**: Spot the Difference. Each is a list of big cards, one per game. Top left is a back button to the difficulty page; top right are the colour switch and the sound switch. Leaving a game (hold the home button) returns here.
 - **Colour / black-and-white** switch: black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
 - **Sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
@@ -102,6 +102,12 @@ A run of letters in alphabet order with one missing in between (never the first 
 
 The two wrong options are random letters (same case) that are not already shown. The right letter fits and its neighbours lean in and hug it (with a little heart). A wrong letter doesn't fit: the neighbours squeeze together and push it out of the gap, it is flung away in a random direction, and then the run ends: the "Oops" screen shows the level reached and playing again starts at level 1, so trying letter after letter does not pay. Dropping a letter anywhere but the gap just slides it back.
 
+## Number Match (Medium)
+
+Piles of little animals, fruit and vegetables are on the left (each pile a different kind of thing and a different count) and the numbers are on the right, in an order where no number sits level with its own pile. The child drags each number onto the pile with that many things. A right match snaps the number onto its pile and turns it green. Dropping a number on the wrong pile ends the run (the "Oops" screen, then level 1 again), so guessing does not pay; dropping it anywhere else slides it back.
+
+- Level 1: 2 pairs (counts 1 to 5). Level 2: 5 pairs (1 to 7). Level 3: 7 pairs (1 to 9).
+
 ## Spot the Difference (Hard)
 
 Two pictures made of the same coloured shapes, one above the other; the lower one has a few changes. Tapping a change in either picture draws a red circle round it in **both** pictures. Tapping anywhere else does nothing at all, nothing can fail, and there is no clock. After 25 quiet seconds one of the missing differences pulses gently. Every picture is generated fresh, so no two games are the same. Made for older kids as well as little ones: the later levels are properly hard.
@@ -167,3 +173,4 @@ This is a gentle limit for a shared family device, not a security lock: clearing
 - `src/SortGame.tsx`, `src/sortLogic.ts`, `src/bucketArt.tsx`: the Fruit Sort game, its pure logic (levels, layout, throw) and the bucket art
 - `src/styles.css`: styling and animations
 - `screenTimeLogic.ts` (timer, sums, tests) and `ScreenTime.tsx` (panel, grown-up keypad, lock screen): screen time limit.
+- `src/MatchGame.tsx`, `src/matchLogic.ts`: the Number Match game and its levels (`critterNames` in `gameData.ts` are its extra animal and vegetable icons).

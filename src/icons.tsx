@@ -397,6 +397,67 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
           </g>
         </svg>
       )
+    case 'carrot':
+      return (
+        <svg {...common}>
+          <path d="M32 24 C42 24 50 28 46 34 L36 58 C34 62 30 62 28 58 L18 34 C14 28 22 24 32 24Z" transform="rotate(25 32 40)" fill="#fb923c" stroke="#c2410c" strokeWidth="3" strokeLinejoin="round" />
+          <g transform="rotate(25 32 40)" stroke="#c2410c" strokeWidth="2.4" strokeLinecap="round" opacity="0.6"><path d="M25 34 L30 34 M34 42 L39 42 M28 50 L32 50" /></g>
+          <path d="M22 22 C18 12 20 6 24 4 C26 10 28 14 30 20Z M32 20 C32 10 36 5 40 5 C40 12 38 16 36 22Z" fill="#4ade80" stroke="#16a34a" strokeWidth="2.4" strokeLinejoin="round" />
+        </svg>
+      )
+    case 'broccoli':
+      return (
+        <svg {...common}>
+          <path d="M26 36 L24 58 Q32 62 40 58 L38 36Z" fill="#a3e635" stroke="#4d7c0f" strokeWidth="3" strokeLinejoin="round" />
+          <g fill="#22c55e" stroke="#15803d" strokeWidth="3">
+            <circle cx="20" cy="28" r="12" /><circle cx="44" cy="28" r="12" /><circle cx="32" cy="18" r="13" /><circle cx="32" cy="32" r="10" />
+          </g>
+          <path d="M24 16 Q27 12 31 13" stroke="#bbf7d0" strokeWidth="3" fill="none" strokeLinecap="round" />
+        </svg>
+      )
+    case 'fish':
+      return (
+        <svg {...common}>
+          <path d="M50 32 L62 20 L62 44Z" fill="#38bdf8" stroke="#0369a1" strokeWidth="3" strokeLinejoin="round" />
+          <ellipse cx="29" cy="32" rx="24" ry="17" fill="#38bdf8" stroke="#0369a1" strokeWidth="3" />
+          <path d="M26 17 Q32 8 38 16Z" fill="#0ea5e9" stroke="#0369a1" strokeWidth="2.4" strokeLinejoin="round" />
+          <circle cx="17" cy="28" r="4.5" fill="#fff" stroke="#0369a1" strokeWidth="2" />
+          <circle cx="16" cy="28" r="2.2" fill="#1f2937" />
+          <path d="M9 38 Q13 41 17 38" stroke="#0369a1" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+          <path d="M33 22 Q38 32 33 42 M41 24 Q45 32 41 40" stroke="#bae6fd" strokeWidth="2.4" fill="none" strokeLinecap="round" />
+        </svg>
+      )
+    case 'duck':
+      return (
+        <svg {...common}>
+          <path d="M8 40 C8 54 20 60 34 60 C50 60 58 50 56 38 C54 30 46 30 42 34 C40 22 36 16 28 16 C18 16 14 24 18 32 C12 32 8 34 8 40Z" fill="#fde047" stroke="#ca8a04" strokeWidth="3" strokeLinejoin="round" />
+          <circle cx="24" cy="26" r="2.8" fill="#1f2937" />
+          <path d="M8 28 L16 24 L16 33Z" fill="#fb923c" stroke="#c2410c" strokeWidth="2.4" strokeLinejoin="round" />
+          <path d="M36 46 Q44 40 50 46" stroke="#ca8a04" strokeWidth="3" fill="none" strokeLinecap="round" />
+        </svg>
+      )
+    case 'ladybug':
+      return (
+        <svg {...common}>
+          <circle cx="32" cy="14" r="9" fill="#1f2937" />
+          <path d="M26 7 L22 2 M38 7 L42 2" stroke="#1f2937" strokeWidth="2.6" strokeLinecap="round" />
+          <ellipse cx="32" cy="38" rx="23" ry="22" fill="#ef4444" stroke="#991b1b" strokeWidth="3" />
+          <path d="M32 16 L32 60" stroke="#1f2937" strokeWidth="3" />
+          <g fill="#1f2937"><circle cx="21" cy="30" r="4.5" /><circle cx="43" cy="30" r="4.5" /><circle cx="19" cy="46" r="4" /><circle cx="45" cy="46" r="4" /></g>
+        </svg>
+      )
+    case 'frog':
+      return (
+        <svg {...common}>
+          <circle cx="18" cy="18" r="11" fill="#4ade80" stroke="#15803d" strokeWidth="3" />
+          <circle cx="46" cy="18" r="11" fill="#4ade80" stroke="#15803d" strokeWidth="3" />
+          <ellipse cx="32" cy="38" rx="26" ry="20" fill="#4ade80" stroke="#15803d" strokeWidth="3" />
+          <circle cx="18" cy="18" r="5" fill="#fff" /><circle cx="46" cy="18" r="5" fill="#fff" />
+          <circle cx="19" cy="19" r="2.6" fill="#1f2937" /><circle cx="45" cy="19" r="2.6" fill="#1f2937" />
+          <path d="M16 42 Q32 54 48 42" stroke="#15803d" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <circle cx="12" cy="34" r="3" fill="#fda4af" opacity="0.8" /><circle cx="52" cy="34" r="3" fill="#fda4af" opacity="0.8" />
+        </svg>
+      )
     case 'watermelon':
       return (
         <svg {...common}>

@@ -26,6 +26,8 @@ import SeriesGame from './SeriesGame'
 import { SERIES_LEVEL_COUNT } from './seriesLogic'
 import SpotGame from './SpotGame'
 import { SPOT_LEVEL_COUNT } from './spotLogic'
+import MatchGame from './MatchGame'
+import { MATCH_LEVEL_COUNT } from './matchLogic'
 import { SORT_LEVEL_COUNT } from './sortLogic'
 import { BackGlyph,
   ColorGlyph,
@@ -41,8 +43,8 @@ import { BackGlyph,
 import * as sound from './sound'
 import { LockScreen, MinuteWarning, ScreenTimePanel, useScreenTime } from './ScreenTime'
 
-type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'spot' | 'winner' | 'failed'
-type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'spot'
+type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'match' | 'spot' | 'winner' | 'failed'
+type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'match' | 'spot'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
@@ -179,6 +181,13 @@ export default function App() {
     setScreen('series')
   }
 
+  const startMatch = () => {
+    clearTimers()
+    setActiveGame('match')
+    setRunId((n) => n + 1)
+    setScreen('match')
+  }
+
   const startSpot = () => {
     clearTimers()
     setActiveGame('spot')
@@ -187,7 +196,7 @@ export default function App() {
   }
 
   const startGame = (game: GameId) =>
-    game === 'spot' ? startSpot() : game === 'series' ? startSeries() : game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
+    game === 'spot' ? startSpot() : game === 'match' ? startMatch() : game === 'series' ? startSeries() : game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
 
   const goHome = () => {
     clearTimers()
@@ -238,6 +247,8 @@ export default function App() {
       startClock()
     } else if (id === 'series') {
       startSeries()
+    } else if (id === 'match') {
+      startMatch()
     } else if (id === 'spot') {
       startSpot()
     } else {
@@ -302,6 +313,8 @@ export default function App() {
               ? CLOCK_LEVEL_COUNT
               : activeGame === 'series'
                 ? SERIES_LEVEL_COUNT
+                : activeGame === 'match'
+                  ? MATCH_LEVEL_COUNT
                 : activeGame === 'spot'
                   ? SPOT_LEVEL_COUNT
                   : LEVEL_COUNT
@@ -589,6 +602,19 @@ export default function App() {
         />
       )}
 
+      {screen === 'match' && (
+        <MatchGame
+          key={runId}
+          onHome={goHome}
+          onFinished={() => setScreen('winner')}
+          onFailed={(level) => {
+            setFailedAt(level)
+            setScreen('failed')
+          }}
+          soundButton={soundButton}
+        />
+      )}
+
       {screen === 'spot' && (
         <SpotGame
           key={runId}
@@ -611,8 +637,10 @@ export default function App() {
                 ? 'That was not the right place.'
                 : activeGame === 'series'
                   ? 'That was not the right letter.'
+                  : activeGame === 'match'
+                    ? 'That number did not match.'
                   : 'That one was different.'} You got to level{' '}
-            {activeGame === 'count' || activeGame === 'clock' || activeGame === 'series' ? failedAt : levelIndex + 1}.</p>
+            {activeGame === 'count' || activeGame === 'clock' || activeGame === 'series' || activeGame === 'match' ? failedAt : levelIndex + 1}.</p>
           <p className="muted">Go Home and try again from level 1.</p>
           <div className="winner-buttons">
             <div className="big-action">
@@ -653,7 +681,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && screen !== 'series' && screen !== 'spot' && (
+      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && screen !== 'series' && screen !== 'match' && screen !== 'spot' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>
