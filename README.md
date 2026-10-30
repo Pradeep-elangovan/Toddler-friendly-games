@@ -136,7 +136,7 @@ This is a gentle limit for a shared family device, not a security lock: clearing
 
 ## Triple Tiles (Hard)
 
-Tiles are stacked on top of each other. A tile with nothing on top is bright and can be tapped; a covered tile is shown dimmed underneath, so the pile can still be read. A tapped tile flies into the tray, which holds **7 tiles** and keeps the same pictures together. When the tray holds **three of a kind** they pop out together. Clear the board and the tray to win the level. If the tray fills up with no match, the run ends (the "Oops" screen, then level 1 again).
+Tiles are stacked on top of each other. A tile with nothing on top is bright and can be tapped; a covered tile is shown dimmed underneath, so the pile can still be read. A tapped tile flies into the tray, which holds **7 tiles** and keeps the same pictures together. When the tray holds **three of a kind** they pop out together, and taps are never blocked while that animation plays (the three leave the tray at once; copies play the pop-out, and tiles flying into the tray ignore touches so they cannot catch a tap meant for the board). Clear the board and the tray to win the level. If the tray fills up with no match, the run ends (the "Oops" screen, then level 1 again).
 
 Every level is guaranteed clearable: the pictures are dealt along an order in which the tiles could really be picked (always a free tile), three tiles at a time. Difficulty comes from the arrangement, and the number of different pictures:
 

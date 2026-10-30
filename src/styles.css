@@ -1995,3 +1995,5 @@ html.bw {
 .ttile.in-tray.vanish { animation: tile-vanish .4s ease-in forwards; }
 .triple-tray.full { background: #ffe3e3; animation: shake .5s ease; }
 @keyframes tile-vanish { 0% { transform: scale(1); } 40% { transform: scale(1.25) rotate(-6deg); } 100% { transform: scale(0) rotate(20deg); opacity: 0; } }
+.ttile.ghost { position: fixed; inset: auto; z-index: 50; pointer-events: none; }
+.ttile.in-tray { pointer-events: none; } /* tiles flying into the tray must never catch a tap meant for the board */
