@@ -255,6 +255,14 @@ export const cards = [
     playable: true,
     color: '#ffc8dd',
   },
+  {
+    id: 'triple',
+    difficulty: 'hard' as DifficultyId,
+    label: 'Triple Tiles',
+    icons: ['apple', 'star', 'heart'] as IconName[],
+    playable: true,
+    color: '#bde0fe',
+  },
 ]
 
 /** The difficulty page that comes before the games. Only Easy has games so far. */

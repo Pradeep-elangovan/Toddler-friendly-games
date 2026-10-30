@@ -1,11 +1,11 @@
 # Toddler Friendly Games
 
-Offline-first React + Vite + TypeScript app with eight playable games (Easy: Pattern Match, Tile Match, Fruit Sort, Counting; Medium: Memory Match, Clock Time, Missing Letter, Number Match): **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting**, **Memory Match**, **Clock Time**, **Missing Letter** and **Number Match**.
+Offline-first React + Vite + TypeScript app with nine playable games (Easy: Pattern Match, Tile Match, Fruit Sort, Counting; Medium: Memory Match, Clock Time, Missing Letter, Number Match): **Pattern Match**, **Tile Match**, **Fruit Sort**, **Counting**, **Memory Match**, **Clock Time**, **Missing Letter** and **Number Match**.
 
 ## Screens
 
 - **Difficulty page** (the first screen): four big cards, **Easy**, **Medium**, **Hard** and **Impossible**. Easy, Medium and Hard are open; Impossible is marked "Coming soon" and just wiggles when tapped. The colour switch and sound switch live here too.
-- **Easy Games**: Pattern Match, Tile Match, Fruit Sort and Counting. **Medium Games**: Memory Match, Clock Time, Missing Letter and Number Match. **Hard Games**: Spot the Difference. Each is a list of big cards, one per game. Top left is a back button to the difficulty page; top right are the colour switch and the sound switch. Leaving a game (hold the home button) returns here.
+- **Easy Games**: Pattern Match, Tile Match, Fruit Sort and Counting. **Medium Games**: Memory Match, Clock Time, Missing Letter and Number Match. **Hard Games**: Spot the Difference and Triple Tiles. Each is a list of big cards, one per game. Top left is a back button to the difficulty page; top right are the colour switch and the sound switch. Leaving a game (hold the home button) returns here.
 - **Colour / black-and-white** switch: black-and-white turns the whole app grey (including confetti), which is handy for calmer play or for practising telling icons apart by shape only.
 - **Sound on / off** switch.
 - Both choices are remembered on the device (in the browser's local storage only; nothing is sent anywhere).
@@ -134,6 +134,14 @@ When time is up the app returns to the first page and a full-screen lock covers 
 
 This is a gentle limit for a shared family device, not a security lock: clearing the browser's site data resets it.
 
+## Triple Tiles (Hard)
+
+Tiles are stacked on top of each other. A tile with nothing on top is bright and can be tapped; a covered tile is shown dimmed underneath, so the pile can still be read. A tapped tile flies into the tray, which holds **7 tiles** and keeps the same pictures together. When the tray holds **three of a kind** they pop out together. Clear the board and the tray to win the level. If the tray fills up with no match, the run ends (the "Oops" screen, then level 1 again).
+
+Every level is guaranteed clearable: the pictures are dealt along an order in which the tiles could really be picked (always a free tile), three tiles at a time. Difficulty comes from the arrangement, and the number of different pictures:
+
+1. A flat little heap, 9 tiles, 3 pictures. 2. Two layers, 12 tiles, 4 pictures. 3. Wider, two layers, 18 tiles. 4. Three layers, 27 tiles, 5 pictures. 5. Wider, three layers, 36 tiles. 6. Four layers, 39 tiles, 6 pictures. 7. Tangled: 45 tiles scattered over five layers at random, so a tile can be partly covered by two or three others.
+
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.
@@ -178,3 +186,4 @@ This is a gentle limit for a shared family device, not a security lock: clearing
 - `src/styles.css`: styling and animations
 - `screenTimeLogic.ts` (timer, sums, tests) and `ScreenTime.tsx` (panel, grown-up keypad, lock screen): screen time limit.
 - `src/MatchGame.tsx`, `src/matchLogic.ts`: the Number Match game and its levels (`critterNames` in `gameData.ts` are its extra animal and vegetable icons).
+- `src/TripleGame.tsx`, `src/tripleLogic.ts`: the Triple Tiles game, its layouts and the dealing of pictures.

@@ -1976,3 +1976,22 @@ html.bw {
 .match-item { width: var(--isz); height: var(--isz); }
 .match-board.right-items .match-card .match-items { --f: 0.4; }
 .match-tile.wide .match-items { --f: 0.88; }
+
+/* ---------- Triple Tiles ---------- */
+.triple-game { gap: 8px; }
+.triple-ask { margin: 0; text-align: center; font-weight: 900; font-size: 1.3rem; color: var(--ink); }
+.triple-board { flex: 1; min-height: 0; position: relative; width: 100%; max-width: 520px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+.triple-stage { position: relative; width: calc(var(--W) * var(--u)); height: calc(var(--H) * var(--u)); flex: none; }
+.ttile { --s: calc(var(--u, 40px) * 2); position: absolute; left: calc(var(--x) * var(--u)); top: calc(var(--y) * var(--u)); z-index: var(--z); width: var(--s); height: var(--s); padding: calc(var(--s) * 0.14); border: 0; border-radius: calc(var(--s) * 0.24); background: #fff; border-bottom: calc(var(--s) * 0.1) solid #b8c4d6; box-shadow: 0 0 0 1.5px #64748b, 0 3px 5px rgba(30,41,59,.25); display: block; overflow: hidden; animation: pop-in .4s cubic-bezier(.34,1.56,.64,1) var(--d,0ms) backwards; transition: transform .15s; }
+.ttile svg { width: 100%; height: 100%; display: block; }
+.ttile::after { content: ''; position: absolute; inset: 0; background: rgba(30,41,59,.42); opacity: 0; transition: opacity .25s; pointer-events: none; }
+.ttile.covered { cursor: default; }
+.ttile.covered::after { opacity: 1; }
+.ttile.free { cursor: pointer; }
+.ttile.free:active { transform: scale(.94); }
+.triple-tray { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; width: 100%; max-width: 440px; margin: 0 auto; padding: 6px; background: rgba(255,255,255,.7); border-radius: 18px; box-shadow: inset 0 2px 0 rgba(0,0,0,.08); }
+.tray-slot { aspect-ratio: 1; border-radius: 10px; background: rgba(45,58,79,.12); position: relative; }
+.ttile.in-tray { --s: 100%; --u: 0px; position: absolute; inset: 0; left: 0; top: 0; width: 100%; height: 100%; padding: 12%; border-radius: 10px; border-bottom-width: 4px; animation: none; z-index: 1; }
+.ttile.in-tray.vanish { animation: tile-vanish .4s ease-in forwards; }
+.triple-tray.full { background: #ffe3e3; animation: shake .5s ease; }
+@keyframes tile-vanish { 0% { transform: scale(1); } 40% { transform: scale(1.25) rotate(-6deg); } 100% { transform: scale(0) rotate(20deg); opacity: 0; } }
