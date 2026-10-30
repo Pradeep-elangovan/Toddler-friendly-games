@@ -258,7 +258,7 @@ export default function TripleGame({ onHome, onFinished, onFailed, soundButton }
           }}
           className="ttile in-tray ghost"
           aria-hidden
-          style={{ left: g.rect.left, top: g.rect.top, width: g.rect.width, height: g.rect.height }}
+          style={{ left: g.rect.left, top: g.rect.top, width: g.rect.width, height: g.rect.height, padding: g.rect.width * 0.12, boxSizing: 'border-box' }}
         >
           <Icon name={g.tile.icon} />
         </div>
