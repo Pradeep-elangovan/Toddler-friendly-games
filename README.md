@@ -90,15 +90,17 @@ On levels 1 to 4 a wrong answer ends the run, like Pattern Match and Counting: t
 
 ## Missing Letter
 
-A run of letters in alphabet order with the **last** letter missing ("A B C ?"), so the child asks "what comes next?" instead of reading on past a gap in the middle. The child drags the missing letter, out of three, into the gap at the end. Ten levels: capitals first, then the same five runs in small letters.
+A run of letters in alphabet order with the **last** letter missing ("G H I ?"), so the child asks "what comes next?" instead of reading on past a gap in the middle. The child drags the missing letter, out of three, into the gap at the end. Ten levels: capitals first, then the same five in small letters.
 
-| Levels | Run (the last letter is the missing one) |
+Where the run starts is **random every time**, so the answer is different every round (any letter can come up). The levels differ only in how many letters are shown before the gap:
+
+| Levels | Letters shown before the gap |
 | --- | --- |
-| 1 / 6 | A B C ? / a b c ? |
-| 2 / 7 | E F G ? / e f g ? |
-| 3 / 8 | I J K L ? / i j k l ? |
-| 4 / 9 | N O P Q ? / n o p q ? |
-| 5 / 10 | U V W X Y ? / u v w x y ? |
+| 1 / 6 | 2 |
+| 2 / 7 | 3 |
+| 3 / 8 | 4 |
+| 4 / 9 | 5 |
+| 5 / 10 | 6 |
 
 The two wrong options are random letters (same case) that are not already shown. The right letter fits and its neighbours lean in and hug it (with a little heart). A wrong letter doesn't fit: the neighbours squeeze together and push it out of the gap, it is flung away in a random direction, and then the run ends: the "Oops" screen shows the level reached and playing again starts at level 1, so trying letter after letter does not pay. Dropping a letter anywhere but the gap just slides it back.
 

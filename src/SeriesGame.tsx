@@ -170,7 +170,6 @@ export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }
     drop(drag.letter)
   }
 
-  const lv = seriesLevels[levelIndex]
 
   return (
     <main className="game series-game">
@@ -192,7 +191,7 @@ export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }
         className={`series-row ${rowAnim}`}
         key={`row-${levelIndex}`}
         role="img"
-        aria-label={`${lv.from} to ${lv.to}, the last letter is missing`}
+        aria-label={`${round.letters.slice(0, -1).join(' ')}, then what comes next?`}
         style={{ '--n': round.letters.length } as React.CSSProperties}
       >
         {round.letters.map((ch, i) => {
