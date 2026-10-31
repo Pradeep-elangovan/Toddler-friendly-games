@@ -1,17 +1,19 @@
 import { shuffle } from './gameData'
 
 /**
- * Missing Letter: a run of letters in alphabet order with one missing in between (never the first or last).
- * The child picks the missing letter out of three. Ten levels: five runs of capitals, then the same five in small letters.
+ * Missing Letter: a run of letters in alphabet order with the LAST one missing ("A B C ?"). The child says what comes
+ * next and picks the missing letter out of three. A gap in the middle made children keep reading on, so it is always at the end.
+ * Ten levels: five runs of capitals, then five runs of small letters, each starting somewhere new.
  */
 export const SERIES_LEVEL_COUNT = 10
 
+/** [first letter, missing (last) letter]; the capitals use these in capitals */
 const RANGES: readonly (readonly [string, string])[] = [
-  ['a', 'e'],
-  ['f', 'k'],
-  ['l', 'p'],
-  ['q', 'u'],
-  ['v', 'z'],
+  ['a', 'd'], // A B C ?
+  ['e', 'h'], // E F G ?
+  ['i', 'm'], // I J K L ?
+  ['n', 'r'],
+  ['u', 'z'], // U V W X Y ?
 ]
 
 export type SeriesLevel = { level: number; from: string; to: string; upper: boolean }
@@ -42,7 +44,7 @@ export function makeSeriesRound(level: number, random: () => number = Math.rando
   const base = lv.from.charCodeAt(0)
   const length = lv.to.charCodeAt(0) - base + 1
   const letters = Array.from({ length }, (_, i) => String.fromCharCode(base + i))
-  const missing = 1 + Math.floor(random() * (length - 2))
+  const missing = length - 1 // always the end of the run
   const answer = letters[missing]
   const alphabet = Array.from({ length: 26 }, (_, i) => String.fromCharCode((lv.upper ? 65 : 97) + i))
   const wrong = shuffle(

@@ -186,13 +186,13 @@ export default function SeriesGame({ onHome, onFinished, onFailed, soundButton }
         {soundButton}
       </header>
 
-      <p className="count-ask">Drag the missing letter into the gap</p>
+      <p className="count-ask">What comes next? Drag the letter</p>
 
       <section
         className={`series-row ${rowAnim}`}
         key={`row-${levelIndex}`}
         role="img"
-        aria-label={`${lv.from} to ${lv.to}, one letter is missing`}
+        aria-label={`${lv.from} to ${lv.to}, the last letter is missing`}
         style={{ '--n': round.letters.length } as React.CSSProperties}
       >
         {round.letters.map((ch, i) => {
