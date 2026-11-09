@@ -116,17 +116,17 @@ Piles of little animals, fruit and vegetables are on the left (each pile a diffe
 
 ## Spot the Difference (Hard)
 
-Two pictures made of the same coloured shapes, one above the other; the lower one has a few changes. Tapping a change in either picture draws a red circle round it in **both** pictures. Tapping anywhere else does nothing at all, nothing can fail, and there is no clock. After 25 quiet seconds one of the missing differences pulses gently. Every picture is generated fresh, so no two games are the same. Made for older kids as well as little ones: the later levels are properly hard.
+Two cartoon pictures of the same little story, one above the other, like a magazine puzzle; the lower one has a few changes. Tapping a change in either picture draws a red circle round it in **both** pictures. Tapping anywhere else does nothing at all, nothing can fail, and there is no clock. After 25 quiet seconds one of the missing differences pulses gently. Made for older kids as well as little ones: the later levels are properly hard.
 
-| Level | Shapes | Differences | What changes |
+| Level | Story | Differences | What changes |
 | --- | --- | --- | --- |
-| 1 | 8 big | 5 | a shape missing, a very different colour, an extra shape |
-| 2 | 12 | 6 | + a clearly bigger or smaller shape |
-| 3 | 16 | 7 | + a shape turned, a shape swapped for another kind; smaller changes |
-| 4 | 22 | 8 | the same kinds of change, but subtler (similar colours, small size changes) |
-| 5 | 30 small | 10 | the subtlest changes, among many small shapes |
+| 1 | Picnic in the Park | 5 | something missing or extra, a very different colour, a small detail (apples on the tree, stripes or dots) |
+| 2 | Farm Morning | 6 | + a clearly bigger or smaller thing |
+| 3 | Day at the Beach | 7 | + something turned around; smaller changes |
+| 4 | Space Trip | 8 | the same kinds of change, subtler (similar colours, small size changes) |
+| 5 | Fairy-tale Town | 10 | the busiest scene (26 things) and the subtlest changes |
 
-A shape is never simply moved a little; the changes are missing, extra, colour, size, turned or a different kind of shape. The differences are always spaced well apart, so their circles never run together.
+Which things change is random every time, and each scene is randomly mirrored, so replays differ. A thing is never simply moved a little; the changes are missing, extra, colour, size, turned around, or a different detail (a window, the number of apples, a flag...). The differences are always spaced well apart, so their circles never run together. All the pictures are drawn in code (`spotArt.tsx`, about 45 little drawings), so they work offline and stay sharp at any size.
 
 ## Screen time limit
 
@@ -179,7 +179,7 @@ Every level is guaranteed clearable: the pictures are dealt along an order in wh
 - `src/sound.ts`: sound effects
 - `src/App.tsx`: home, Pattern Match, finish screen, and the colour / sound switches
 - `src/TileGame.tsx`: the Tile Match game
-- `src/SpotGame.tsx`, `src/spotLogic.ts`: the Spot the Difference game and its scene generator
+- `src/SpotGame.tsx`, `src/spotLogic.ts`, `src/spotArt.tsx`: the Spot the Difference game, its five story scenes and how the changes are chosen, and the little drawings the scenes are built from
 - `src/SeriesGame.tsx`, `src/seriesLogic.ts`: the Missing Letter game and its levels
 - `src/ClockGame.tsx`, `src/clockLogic.ts`: the Clock Time game and its levels
 - `src/MemoryGame.tsx`, `src/memoryLogic.ts`: the Memory Match game and its levels

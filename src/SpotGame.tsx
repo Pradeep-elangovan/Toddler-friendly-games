@@ -9,10 +9,12 @@ import {
   findHit,
   makeSpotScene,
   spotLevels,
+  type Backdrop,
   type Diff,
-  type Shape,
+  type Item,
   type SpotScene,
 } from './spotLogic'
+import { ART } from './spotArt'
 import * as sound from './sound'
 
 type Props = {
@@ -22,52 +24,68 @@ type Props = {
   soundButton: React.ReactNode
 }
 
-const STAR_PATH = (() => {
-  const pts: string[] = []
-  for (let i = 0; i < 10; i++) {
-    const r = i % 2 === 0 ? 0.52 : 0.22
-    const a = (-90 + i * 36) * (Math.PI / 180)
-    pts.push(`${(Math.cos(a) * r).toFixed(3)},${(Math.sin(a) * r + 0.03).toFixed(3)}`)
-  }
-  return pts.join(' ')
-})()
-
-/** One coloured shape, drawn in a unit box and scaled to its size. */
-function ShapeEl({ shape }: { shape: Shape }) {
-  const fill = `hsl(${shape.h} 78% 60%)`
-  const stroke = `hsl(${shape.h} 70% 36%)`
-  const common = { fill, stroke, strokeWidth: 0.07, strokeLinejoin: 'round' as const }
-  let body: React.ReactNode
-  switch (shape.kind) {
-    case 'circle':
-      body = <circle r="0.5" {...common} />
-      break
-    case 'square':
-      body = <rect x="-0.44" y="-0.44" width="0.88" height="0.88" rx="0.14" {...common} />
-      break
-    case 'triangle':
-      body = <polygon points="0,-0.52 0.54,0.4 -0.54,0.4" {...common} />
-      break
-    case 'diamond':
-      body = <polygon points="0,-0.56 0.5,0 0,0.56 -0.5,0" {...common} />
-      break
-    case 'star':
-      body = <polygon points={STAR_PATH} {...common} />
-      break
-    case 'heart':
-      body = (
-        <path
-          d="M0 0.46 C-0.7 -0.05 -0.42 -0.5 -0.2 -0.46 C-0.06 -0.44 0 -0.34 0 -0.28 C0 -0.34 0.06 -0.44 0.2 -0.46 C0.42 -0.5 0.7 -0.05 0 0.46Z"
-          {...common}
-        />
-      )
-      break
-  }
+/** One thing in the picture, drawn in its box and placed and scaled. */
+export function ItemEl({ item }: { item: Item }) {
+  const art = ART[item.art]
+  const sx = item.flip ? -item.s : item.s
   return (
-    <g data-id={shape.id} transform={`translate(${shape.x} ${shape.y}) rotate(${shape.rot}) scale(${shape.s})`}>
-      {body}
+    <g data-id={item.id} transform={`translate(${item.x} ${item.y}) scale(${sx} ${item.s}) translate(-0.5 -0.5)`}>
+      {art.draw({ h: item.h, v: item.v })}
     </g>
   )
+}
+
+/** The unchanging background of a story scene. */
+export function Scenery({ kind }: { kind: Backdrop }) {
+  switch (kind) {
+    case 'park':
+      return (
+        <>
+          <rect width={SCENE_W} height={SCENE_H} fill="#bfe6ff" />
+          <path d="M0 40 Q25 30 50 38 T100 36 V80 H0Z" fill="#7bc46f" />
+          <rect y="46" width={SCENE_W} height="34" fill="#8ed081" />
+        </>
+      )
+    case 'farm':
+      return (
+        <>
+          <rect width={SCENE_W} height={SCENE_H} fill="#c9ecff" />
+          <path d="M0 40 Q30 28 60 38 T100 34 V80 H0Z" fill="#9bd77a" />
+          <rect y="44" width={SCENE_W} height="36" fill="#8ed081" />
+          <path d="M0 52 H100 M0 62 H100" stroke="#7bc46f" strokeWidth="0.8" />
+        </>
+      )
+    case 'beach':
+      return (
+        <>
+          <rect width={SCENE_W} height={SCENE_H} fill="#c9ecff" />
+          <rect y="28" width={SCENE_W} height="24" fill="#4cb8e8" />
+          <path d="M0 34 q6 -3 12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0" fill="none" stroke="#fff" strokeOpacity=".6" strokeWidth=".8" />
+          <path d="M0 46 q6 -3 12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0 t12 0" fill="none" stroke="#fff" strokeOpacity=".5" strokeWidth=".8" />
+          <path d="M0 52 Q50 46 100 52 V80 H0Z" fill="#f3dca0" />
+        </>
+      )
+    case 'space':
+      return (
+        <>
+          <rect width={SCENE_W} height={SCENE_H} fill="#1d2a5b" />
+          <rect width={SCENE_W} height="40" fill="#25346e" opacity=".5" />
+          {[[14, 30], [28, 16], [44, 34], [58, 6], [76, 28], [88, 8], [96, 58], [4, 54], [50, 60], [72, 52], [34, 52], [20, 68], [62, 76], [84, 62]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? 0.6 : 0.4} fill="#fff" opacity=".8" />
+          ))}
+        </>
+      )
+    case 'town':
+      return (
+        <>
+          <rect width={SCENE_W} height={SCENE_H} fill="#d6e6ff" />
+          <rect width={SCENE_W} height="30" fill="#ffe3f0" opacity=".7" />
+          <path d="M0 50 Q30 42 60 48 T100 46 V80 H0Z" fill="#a7e08f" />
+          <rect y="54" width={SCENE_W} height="26" fill="#9bd77a" />
+          <path d="M0 74 Q50 68 100 74 V80 H0Z" fill="#e8d5b5" />
+        </>
+      )
+  }
 }
 
 /** A red circle drawn around a difference that was found. */
@@ -155,18 +173,18 @@ export default function SpotGame({ onHome, onFinished, soundButton }: Props) {
     }
   }
 
-  const picture = (shapes: Shape[], which: 'a' | 'b') => (
+  const picture = (items: Item[], which: 'a' | 'b') => (
     <svg
       className="spot-pic"
       data-pic={which}
       viewBox={`0 0 ${SCENE_W} ${SCENE_H}`}
       onPointerDown={onTap}
       role="img"
-      aria-label={which === 'a' ? 'First picture' : 'Second picture'}
+      aria-label={`${scene.name}, ${which === 'a' ? 'first' : 'second'} picture`}
     >
-      <rect width={SCENE_W} height={SCENE_H} fill={scene.bg} />
-      {shapes.map((s) => (
-        <ShapeEl key={s.id} shape={s} />
+      <Scenery kind={scene.backdrop} />
+      {items.map((it) => (
+        <ItemEl key={it.id} item={it} />
       ))}
       {scene.diffs
         .filter((d) => found.includes(d.id))
