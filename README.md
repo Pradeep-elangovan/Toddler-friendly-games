@@ -148,9 +148,9 @@ Every level is guaranteed clearable: the pictures are dealt along an order in wh
 
 Teaches Straight, Left, Right and Back, the way a child reads a map. The cheetah is seen from above on a road map and the buttons are always **the cheetah's own** directions (not compass points). A command turns the cheetah, then it walks to the next bend, junction, dead end or the place to reach.
 
-- Levels 1-3 (guide): tap a button and the cheetah moves at once; fast taps are queued, never lost. Levels 4-7 (plan): line up the arrows, press **GO**; tap a chip to remove it.
-- Level 4 starts facing a dead end (first command: Back). Level 7 is three errands: shop, then park, then school.
-- Going the wrong way is a real bump: the cheetah hits the grass, stars and "Ouch!", then returns to the start. There is no game over; the plan is kept with the crashed arrow in red.
+- Every level is step by step: tap a button and the cheetah moves at once; fast taps are queued, never lost. Routes get longer each level (1, 2, 6, 7, 9, 13, 15 moves).
+- Level 4 starts facing a dead end (first command: Back). Level 5: shop, then park. Level 6: shop, park, then home. Level 7: shop, park, school, then back home.
+- Going the wrong way is a real bump: the cheetah hits the grass, stars and "Ouch!", then returns to the start. There is no game over.
 - Maps are mirrored at random. After 25 s idle the next button pulses. Code: `mapLogic.ts` (maps, simulate, breadth-first solver), `mapArt.tsx`, `MapGame.tsx`.
 
 ## Toddler-friendly details

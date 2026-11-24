@@ -68,35 +68,34 @@ export const SPECS: readonly Spec[] = [
   },
   // 4: starts facing a dead end, so the first command is Back
   {
-    mode: 'plan',
-    roads: [[[3, 1], [3, 5], [6, 5]], [[3, 3], [1, 3]]],
+    mode: 'guide',
+    roads: [[[3, 1], [3, 3], [1, 3], [1, 6], [5, 6], [5, 3]], [[3, 6], [3, 8]], [[1, 5], [0, 5]]],
     start: [3, 1, N],
-    targets: [[6, 5, 'home']],
-    ponds: [[5, 7], [0, 7]],
+    targets: [[5, 3, 'home']],
+    ponds: [[6, 1], [6, 7]],
   },
-  // 5: a longer winding road with two side roads
+  // 5: shop first (down a side road), then the park
   {
-    mode: 'plan',
+    mode: 'guide',
     roads: [[[5, 8], [5, 6], [2, 6], [2, 3], [5, 3], [5, 0]], [[2, 5], [0, 5]], [[5, 1], [3, 1]]],
     start: [5, 8, N],
-    targets: [[5, 0, 'school']],
+    targets: [[0, 5, 'shop'], [5, 0, 'park']],
     ponds: [[0, 2], [4, 7]],
   },
-  // 6: a big map: many bends and side roads
+  // 6: shop, then park, then home
   {
-    mode: 'plan',
+    mode: 'guide',
     roads: [[[6, 8], [6, 6], [2, 6], [2, 4], [5, 4], [5, 2], [1, 2], [1, 0]], [[4, 6], [4, 8]], [[3, 2], [3, 0]]],
     start: [6, 8, N],
-    targets: [[1, 0, 'shop']],
+    targets: [[4, 8, 'shop'], [3, 0, 'park'], [1, 0, 'home']],
     ponds: [[0, 4], [6, 1], [0, 7]],
   },
-  // 7: errands: from home to the shop, then the park, then the school
+  // 7: shop, park, school, and back home again
   {
-    mode: 'plan',
-    roads: [[[3, 8], [3, 5]], [[3, 5], [1, 5], [1, 3]], [[3, 5], [5, 5], [5, 0]], [[3, 7], [5, 7]]],
+    mode: 'guide',
+    roads: [[[3, 8], [3, 5]], [[3, 5], [1, 5], [1, 3]], [[3, 5], [5, 5], [5, 0]], [[3, 7], [5, 7]], [[5, 2], [3, 2]]],
     start: [3, 8, N],
-    home: true,
-    targets: [[1, 3, 'shop'], [5, 3, 'park'], [5, 0, 'school']],
+    targets: [[1, 3, 'shop'], [5, 3, 'park'], [3, 2, 'school'], [3, 8, 'home']],
     ponds: [[0, 1], [6, 8]],
   },
 ]
