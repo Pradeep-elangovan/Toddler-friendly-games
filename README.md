@@ -144,6 +144,15 @@ Every level is guaranteed clearable: the pictures are dealt along an order in wh
 
 1. A flat little heap, 9 tiles, 3 pictures. 2. Two layers, 12 tiles, 4 pictures. 3. Wider, two layers, 18 tiles. 4. Three layers, 27 tiles, 5 pictures. 5. Wider, three layers, 36 tiles. 6. Four layers, 39 tiles, 6 pictures. 7. Tangled: 45 tiles scattered over five layers at random, so a tile can be partly covered by two or three others.
 
+## Cheetah's Trip (Hard)
+
+Teaches Straight, Left, Right and Back, the way a child reads a map. The cheetah is seen from above on a road map and the buttons are always **the cheetah's own** directions (not compass points). A command turns the cheetah, then it walks to the next bend, junction, dead end or the place to reach.
+
+- Levels 1-3 (guide): tap a button and the cheetah moves at once; fast taps are queued, never lost. Levels 4-7 (plan): line up the arrows, press **GO**; tap a chip to remove it.
+- Level 4 starts facing a dead end (first command: Back). Level 7 is three errands: shop, then park, then school.
+- Going the wrong way is a real bump: the cheetah hits the grass, stars and "Ouch!", then returns to the start. There is no game over; the plan is kept with the crashed arrow in red.
+- Maps are mirrored at random. After 25 s idle the next button pulses. Code: `mapLogic.ts` (maps, simulate, breadth-first solver), `mapArt.tsx`, `MapGame.tsx`.
+
 ## Toddler-friendly details
 
 - Big, colourful icons and large tap targets; almost no reading needed.

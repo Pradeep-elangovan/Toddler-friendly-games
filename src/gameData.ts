@@ -21,7 +21,7 @@ export const fruitNames = ['apple', 'banana', 'orange', 'grapes', 'strawberry', 
 export type FruitName = (typeof fruitNames)[number]
 
 /** Icons used only on the home screen cards. */
-export const cardOnlyNames = ['clock', 'letterA', 'letterB', 'letterC', 'search'] as const
+export const cardOnlyNames = ['clock', 'letterA', 'letterB', 'letterC', 'search', 'cheetah', 'signpost'] as const
 
 /** Animals and vegetables used by Number Match, together with the fruit. */
 export const critterNames = ['carrot', 'broccoli', 'fish', 'duck', 'ladybug', 'frog'] as const
@@ -262,6 +262,14 @@ export const cards = [
     icons: ['apple', 'star', 'heart'] as IconName[],
     playable: true,
     color: '#bde0fe',
+  },
+  {
+    id: 'trip',
+    difficulty: 'hard' as DifficultyId,
+    label: "Cheetah's Trip",
+    icons: ['cheetah', 'signpost', 'star'] as IconName[],
+    playable: true,
+    color: '#ffe29a',
   },
 ]
 

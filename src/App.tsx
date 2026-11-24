@@ -29,6 +29,8 @@ import { SPOT_LEVEL_COUNT } from './spotLogic'
 import MatchGame from './MatchGame'
 import TripleGame from './TripleGame'
 import { TRIPLE_LEVEL_COUNT } from './tripleLogic'
+import MapGame from './MapGame'
+import { MAP_LEVEL_COUNT } from './mapLogic'
 import { MATCH_LEVEL_COUNT } from './matchLogic'
 import { SORT_LEVEL_COUNT } from './sortLogic'
 import { BackGlyph,
@@ -45,8 +47,8 @@ import { BackGlyph,
 import * as sound from './sound'
 import { LockScreen, MinuteWarning, ScreenTimePanel, useScreenTime } from './ScreenTime'
 
-type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'match' | 'triple' | 'spot' | 'winner' | 'failed'
-type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'match' | 'triple' | 'spot'
+type Screen = 'levels' | 'home' | 'game' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'match' | 'triple' | 'trip' | 'spot' | 'winner' | 'failed'
+type GameId = 'pattern' | 'tiles' | 'sort' | 'count' | 'memory' | 'clock' | 'series' | 'match' | 'triple' | 'trip' | 'spot'
 
 const BW_KEY = 'tfg.bw'
 const MUTE_KEY = 'tfg.muted'
@@ -197,6 +199,13 @@ export default function App() {
     setScreen('triple')
   }
 
+  const startTrip = () => {
+    clearTimers()
+    setActiveGame('trip')
+    setRunId((n) => n + 1)
+    setScreen('trip')
+  }
+
   const startSpot = () => {
     clearTimers()
     setActiveGame('spot')
@@ -205,7 +214,7 @@ export default function App() {
   }
 
   const startGame = (game: GameId) =>
-    game === 'spot' ? startSpot() : game === 'triple' ? startTriple() : game === 'match' ? startMatch() : game === 'series' ? startSeries() : game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
+    game === 'spot' ? startSpot() : game === 'trip' ? startTrip() : game === 'triple' ? startTriple() : game === 'match' ? startMatch() : game === 'series' ? startSeries() : game === 'clock' ? startClock() : game === 'memory' ? startMemory() : game === 'tiles' ? startTiles() : game === 'sort' ? startSort() : game === 'count' ? startCount() : beginLevel(0)
 
   const goHome = () => {
     clearTimers()
@@ -260,6 +269,8 @@ export default function App() {
       startMatch()
     } else if (id === 'triple') {
       startTriple()
+    } else if (id === 'trip') {
+      startTrip()
     } else if (id === 'spot') {
       startSpot()
     } else {
@@ -326,6 +337,8 @@ export default function App() {
                 ? SERIES_LEVEL_COUNT
                 : activeGame === 'match'
                   ? MATCH_LEVEL_COUNT
+                : activeGame === 'trip'
+                  ? MAP_LEVEL_COUNT
                 : activeGame === 'triple'
                   ? TRIPLE_LEVEL_COUNT
                 : activeGame === 'spot'
@@ -641,6 +654,8 @@ export default function App() {
         />
       )}
 
+      {screen === 'trip' && <MapGame key={runId} onHome={goHome} onFinished={() => setScreen('winner')} soundButton={soundButton} />}
+
       {screen === 'spot' && (
         <SpotGame
           key={runId}
@@ -709,7 +724,7 @@ export default function App() {
         </main>
       )}
 
-      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && screen !== 'series' && screen !== 'match' && screen !== 'triple' && screen !== 'spot' && (
+      {screen !== 'game' && screen !== 'tiles' && screen !== 'sort' && screen !== 'count' && screen !== 'memory' && screen !== 'clock' && screen !== 'series' && screen !== 'match' && screen !== 'triple' && screen !== 'trip' && screen !== 'spot' && (
         <footer className="footer">
           <small>All local · No accounts · No tracking</small>
         </footer>
