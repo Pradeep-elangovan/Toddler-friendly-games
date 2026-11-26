@@ -45,6 +45,7 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
   const [stage, setStage] = useState(0) // some levels come in parts
   const [round, setRound] = useState<MatchRound>(() => makeMatchRound(1))
   const [matched, setMatched] = useState<Record<number, { dx: number; dy: number; scale: number }>>({}) // number -> where it snapped
+  const [lives, setLives] = useState(3) // wrong matches left; none left sends the child back to level 1
   const [wrongGroup, setWrongGroup] = useState<number | null>(null) // pile that was wrongly chosen
   const [wrongNum, setWrongNum] = useState<number | null>(null)
   const [drag, setDrag] = useState<{ n: number; pid: number; sx: number; sy: number; dx: number; dy: number } | null>(null)
@@ -135,13 +136,21 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
         }, 2700)
       }
     } else {
-      // wrong pile: the pile shakes, the run is over
+      // wrong pile: the pile shakes and a life is lost; the third wrong match ends the run
       busy.current = true
       setWrongGroup(target)
       setWrongNum(n)
       setDrag(null)
       sound.playYuck()
-      later(() => onFailed(levelIndex + 1), 1100)
+      const left = lives - 1
+      setLives(left)
+      if (left <= 0) later(() => onFailed(levelIndex + 1), 1100)
+      else
+        later(() => {
+          setWrongGroup(null)
+          setWrongNum(null)
+          busy.current = false
+        }, 900)
     }
   }
 
@@ -174,6 +183,11 @@ export default function MatchGame({ onHome, onFinished, onFailed, soundButton }:
         </div>
         {soundButton}
       </header>
+      <div className="lives" role="img" aria-label={`${lives} ${lives === 1 ? 'life' : 'lives'} left`}>
+        {[0, 1, 2].map((i) => (
+          <span key={i} className={i < lives ? 'on' : 'off'}>♥</span>
+        ))}
+      </div>
 
       <p className="count-ask">Match them up</p>
 

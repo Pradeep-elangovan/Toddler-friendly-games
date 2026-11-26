@@ -114,6 +114,8 @@ Piles of little animals, fruit and vegetables are on the left (each pile a diffe
 - Level 6: piles matched with piles of a *different* kind of thing (same amount). Level 7: piles matched with piles of the *same* kind of thing.
 - On levels 6 and 7 the right-hand tiles are piles, not numbers; drag a pile onto the left pile with the same amount.
 
+Three lives (hearts under the level dots): a wrong match shakes and costs a life; the third ends the run and the child starts again from level 1. Lives are kept across levels.
+
 ## Spot the Difference (Hard)
 
 Two cartoon pictures of the same little story, one above the other, like a magazine puzzle; the lower one has a few changes. Tapping a change in either picture draws a red circle round it in **both** pictures. Tapping anywhere else does nothing at all, nothing can fail, and there is no clock. After 25 quiet seconds one of the missing differences pulses gently. Made for older kids as well as little ones: the later levels are properly hard.

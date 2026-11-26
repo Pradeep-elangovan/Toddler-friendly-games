@@ -2037,3 +2037,8 @@ html.bw {
 .trip-cmd:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.2); }
 .trip-cmd.hint, .trip-clear.hint { animation: trip-hint .8s ease-in-out infinite; }
 @keyframes trip-hint { 0%,100% { transform: scale(1) } 50% { transform: scale(1.12) } }
+
+/* lives (Number Match) */
+.lives { display: flex; justify-content: center; gap: 6px; font-size: 1.5rem; line-height: 1; margin: -2px 0; }
+.lives .on { color: #ef476f; }
+.lives .off { color: #cbd5e1; animation: none; }
