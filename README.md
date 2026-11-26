@@ -144,7 +144,7 @@ Every level is guaranteed clearable: the pictures are dealt along an order in wh
 
 1. A flat little heap, 9 tiles, 3 pictures. 2. Two layers, 12 tiles, 4 pictures. 3. Wider, two layers, 18 tiles. 4. Three layers, 27 tiles, 5 pictures. 5. Wider, three layers, 36 tiles. 6. Four layers, 39 tiles, 6 pictures. 7. Tangled: 45 tiles scattered over five layers at random, so a tile can be partly covered by two or three others.
 
-## Cheetah's Trip (Hard)
+## Map (Hard)
 
 Teaches Straight, Left, Right and Back, the way a child reads a map. The marker is a blue navigation arrow seen from above on a road map and the buttons are always **the cheetah's own** directions (not compass points). A command turns the cheetah, then it walks to the next bend, junction, dead end or the place to reach.
 

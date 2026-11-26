@@ -266,7 +266,7 @@ export const cards = [
   {
     id: 'trip',
     difficulty: 'hard' as DifficultyId,
-    label: "Cheetah's Trip",
+    label: 'Map',
     icons: ['cheetah', 'signpost', 'star'] as IconName[],
     playable: true,
     color: '#ffe29a',
