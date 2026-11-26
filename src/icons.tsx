@@ -311,19 +311,9 @@ export function Icon({ name, className = '' }: { name: IconName; className?: str
     case 'cheetah':
       return (
         <svg {...common}>
-          <circle cx="14" cy="14" r="8" fill="#f7c35a" stroke="#b9801f" strokeWidth="2.5" />
-          <circle cx="50" cy="14" r="8" fill="#f7c35a" stroke="#b9801f" strokeWidth="2.5" />
-          <circle cx="14" cy="14" r="3.5" fill="#e58aa0" />
-          <circle cx="50" cy="14" r="3.5" fill="#e58aa0" />
-          <ellipse cx="32" cy="34" rx="22" ry="21" fill="#f7c35a" stroke="#b9801f" strokeWidth="3" />
-          <g fill="#4a3320"><circle cx="17" cy="26" r="2.2" /><circle cx="47" cy="26" r="2.2" /><circle cx="22" cy="19" r="1.8" /><circle cx="42" cy="19" r="1.8" /><circle cx="32" cy="15" r="1.8" /></g>
-          <path d="M21 31 Q18 42 25 51 M43 31 Q46 42 39 51" stroke="#4a3320" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-          <circle cx="24" cy="30" r="4.6" fill="#fff" />
-          <circle cx="40" cy="30" r="4.6" fill="#fff" />
-          <circle cx="25" cy="31" r="2.5" fill="#2d2a26" />
-          <circle cx="39" cy="31" r="2.5" fill="#2d2a26" />
-          <ellipse cx="32" cy="39" rx="3.6" ry="2.6" fill="#4a3320" />
-          <path d="M32 41.5 V45 M27 46 Q32 50 37 46" stroke="#4a3320" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+          <circle cx="32" cy="32" r="27" fill="#4285f4" opacity="0.22" />
+          <path d="M32 8 L50 54 L32 44 L14 54Z" fill="#4285f4" stroke="#fff" strokeWidth="4" strokeLinejoin="round" />
+          <path d="M32 8 L32 44 L14 54Z" fill="#2b66d9" />
         </svg>
       )
     case 'signpost':

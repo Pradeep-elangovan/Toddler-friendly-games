@@ -284,7 +284,7 @@ export default function MapGame({ onHome, onFinished, soundButton }: Props) {
 
   const ask =
     map.targets.length === 1
-      ? `Help the cheetah get to the ${PLACE_NAME[map.targets[0].kind]}`
+      ? `Take the arrow to the ${PLACE_NAME[map.targets[0].kind]}`
       : `Go to the ${map.targets.map((t) => PLACE_NAME[t.kind]).join(', then the ')}`
 
   const W = map.cols * 10
@@ -389,7 +389,7 @@ export default function MapGame({ onHome, onFinished, soundButton }: Props) {
             data-y={pose.y}
           >
             <g className="trip-shadow">
-              <ellipse cx="0.5" cy="1.2" rx="3.2" ry="5" fill="rgba(0,0,0,.14)" />
+              <circle cx="0.4" cy="0.8" r="5" fill="rgba(0,0,0,.12)" />
             </g>
             <CheetahArt />
           </g>

@@ -146,7 +146,7 @@ Every level is guaranteed clearable: the pictures are dealt along an order in wh
 
 ## Cheetah's Trip (Hard)
 
-Teaches Straight, Left, Right and Back, the way a child reads a map. The cheetah is seen from above on a road map and the buttons are always **the cheetah's own** directions (not compass points). A command turns the cheetah, then it walks to the next bend, junction, dead end or the place to reach.
+Teaches Straight, Left, Right and Back, the way a child reads a map. The marker is a blue navigation arrow seen from above on a road map and the buttons are always **the cheetah's own** directions (not compass points). A command turns the cheetah, then it walks to the next bend, junction, dead end or the place to reach.
 
 - Every level is step by step: tap a button and the cheetah moves at once; fast taps are queued, never lost. Routes get longer each level (1, 2, 6, 7, 9, 13, 15 moves).
 - Level 4 starts facing a dead end (first command: Back). Level 5: shop, then park. Level 6: shop, park, then home. Level 7: shop, park, school, then back home.

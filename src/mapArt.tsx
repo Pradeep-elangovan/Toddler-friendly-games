@@ -4,42 +4,12 @@ import type { Cmd, Decor, PlaceKind } from './mapLogic'
 /** Drawings for Cheetah's Trip. Everything is drawn around (0,0) inside a 10×10 map cell. */
 
 export function CheetahArt() {
-  // seen from above, facing up
+  // the blue navigation arrow from map apps, pointing up (the way the cheetah faces)
   return (
     <g>
-      {/* tail */}
-      <path d="M0 3.6 Q2.6 5.6 1.2 7.6" stroke="#f4b942" strokeWidth="1.3" fill="none" strokeLinecap="round" />
-      <path d="M1.5 6.6 Q1.6 7.2 1.2 7.6" stroke="#4a3320" strokeWidth="1.3" fill="none" strokeLinecap="round" />
-      {/* legs */}
-      <g fill="#f4b942" stroke="#b9801f" strokeWidth="0.35">
-        <ellipse cx="-2.5" cy="-1.1" rx="0.95" ry="1.5" />
-        <ellipse cx="2.5" cy="-1.1" rx="0.95" ry="1.5" />
-        <ellipse cx="-2.4" cy="2.7" rx="0.95" ry="1.6" />
-        <ellipse cx="2.4" cy="2.7" rx="0.95" ry="1.6" />
-      </g>
-      {/* body */}
-      <ellipse cx="0" cy="0.9" rx="2.7" ry="4.3" fill="#f7c35a" stroke="#b9801f" strokeWidth="0.4" />
-      <g fill="#4a3320">
-        <circle cx="-1.2" cy="-0.4" r="0.38" />
-        <circle cx="1.1" cy="0.3" r="0.4" />
-        <circle cx="-0.5" cy="1.5" r="0.4" />
-        <circle cx="1.3" cy="2.4" r="0.36" />
-        <circle cx="-1.4" cy="2.7" r="0.36" />
-        <circle cx="0.1" cy="3.6" r="0.34" />
-        <circle cx="0" cy="-1.5" r="0.34" />
-      </g>
-      {/* head */}
-      <circle cx="-1.55" cy="-4.9" r="0.95" fill="#f7c35a" stroke="#b9801f" strokeWidth="0.35" />
-      <circle cx="1.55" cy="-4.9" r="0.95" fill="#f7c35a" stroke="#b9801f" strokeWidth="0.35" />
-      <circle cx="-1.55" cy="-4.9" r="0.45" fill="#e58aa0" />
-      <circle cx="1.55" cy="-4.9" r="0.45" fill="#e58aa0" />
-      <ellipse cx="0" cy="-3.6" rx="2.3" ry="2.1" fill="#f7c35a" stroke="#b9801f" strokeWidth="0.4" />
-      <path d="M-1.1 -4.2 Q-1.35 -3 -0.9 -2.4 M1.1 -4.2 Q1.35 -3 0.9 -2.4" stroke="#4a3320" strokeWidth="0.35" fill="none" strokeLinecap="round" />
-      <circle cx="-0.95" cy="-4.15" r="0.42" fill="#fff" />
-      <circle cx="0.95" cy="-4.15" r="0.42" fill="#fff" />
-      <circle cx="-0.95" cy="-4.3" r="0.22" fill="#2d2a26" />
-      <circle cx="0.95" cy="-4.3" r="0.22" fill="#2d2a26" />
-      <ellipse cx="0" cy="-2.55" rx="0.55" ry="0.4" fill="#4a3320" />
+      <circle r="5.2" fill="#4285f4" opacity="0.22" />
+      <path d="M0 -4.6 L3.7 4.4 L0 2.4 L-3.7 4.4Z" fill="#4285f4" stroke="#fff" strokeWidth="0.9" strokeLinejoin="round" />
+      <path d="M0 -4.6 L0 2.4 L-3.7 4.4Z" fill="#2b66d9" />
     </g>
   )
 }
